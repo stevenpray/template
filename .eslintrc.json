@@ -393,7 +393,7 @@
       "settings": {
         "import/resolver": {
           "node": { "extensions": [".js", ".json", ".jsx", ".ts", ".tsx"] },
-          "typescript": { "directory": "." }
+          "typescript": { "project": "." }
         }
       }
     },
