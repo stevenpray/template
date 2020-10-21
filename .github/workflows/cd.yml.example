@@ -1,0 +1,34 @@
+---
+name: CD
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+jobs:
+  cd:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+          registry-url: "https://npm.pkg.github.com"
+      - id: cache-settings
+        run: 'echo "::set-output name=dir::$(npm config get cache)"'
+      - uses: actions/cache@v1
+        with:
+          key: "${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}"
+          path: "${{ steps.cache-settings.outputs.dir }}"
+          restore-keys: "${{ runner.os }}-"
+      - run: "npm ci"
+      - env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        run: "npx semantic-release"
+      - env:
+          NODE_AUTH_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        run: "npm publish"
+    strategy:
+      fail-fast: true

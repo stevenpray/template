@@ -1,0 +1,33 @@
+---
+name: CI
+on:
+  pull_request:
+    branches:
+      - develop
+  push:
+    branches:
+      - develop
+jobs:
+  ci:
+    runs-on: "${{ matrix.os }}"
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - id: cache-settings
+        run: 'echo "::set-output name=dir::$(npm config get cache)"'
+      - uses: actions/cache@v1
+        with:
+          key: "${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}"
+          path: "${{ steps.cache-settings.outputs.dir }}"
+          restore-keys: "${{ runner.os }}-"
+      - run: "npm ci"
+      - run: "npm test"
+      - run: "npm pack"
+    strategy:
+      fail-fast: true
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest

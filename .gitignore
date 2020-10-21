@@ -1,0 +1,13 @@
+*.env
+*.log
+*.tgz
+/coverage/
+/lib/
+/package/
+/var/
+config.json*
+docker-compose.override.yml
+http-client.private.env.json
+node_modules/
+npm-debug.log*
+tsconfig.tsbuildinfo

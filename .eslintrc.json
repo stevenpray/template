@@ -1,0 +1,419 @@
+{
+  "root": true,
+  "reportUnusedDisableDirectives": true,
+  "env": {
+    "commonjs": true,
+    "es6": true,
+    "jest": true,
+    "node": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "ecmaFeatures": { "jsx": true },
+    "sourceType": "module"
+  },
+  "plugins": [
+    "@typescript-eslint",
+    "babel",
+    "import",
+    "jest",
+    "jsdoc",
+    "json",
+    "markdown",
+    "node",
+    "prettier",
+    "promise",
+    "unicorn"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:jest/recommended",
+    "plugin:jest/style",
+    "plugin:jsdoc/recommended",
+    "plugin:json/recommended",
+    "plugin:node/recommended",
+    "plugin:promise/recommended",
+    "plugin:unicorn/recommended",
+    "plugin:prettier/recommended",
+    "prettier/babel"
+  ],
+  "rules": {
+    "array-callback-return": 2,
+    "camelcase": 0, // @see babel/camelcase
+    "consistent-return": 2,
+    "consistent-this": [1, "that"],
+    "curly": [2, "all"],
+    "default-case-last": 2,
+    "default-param-last": 1,
+    "dot-notation": 1,
+    "eqeqeq": [2, "smart"],
+    "func-style": [1, "expression"],
+    "getter-return": [2, { "allowImplicit": true }], // @override eslint:recommended allowImplicit
+    "guard-for-in": 2,
+    "jsx-quotes": 1,
+    "line-comment-position": [1, { "position": "above", "applyDefaultPatterns": true }],
+    "lines-around-directive": [1, { "before": "always", "after": "always" }],
+    "lines-between-class-members": [1, "always", { "exceptAfterSingleLine": true }],
+    "new-cap": 0, // @see babel/new-cap
+    "new-parens": 1,
+    "no-alert": 2,
+    "no-array-constructor": 2,
+    "no-await-in-loop": 2,
+    "no-confusing-arrow": [2, { "allowParens": true }],
+    "no-console": 1,
+    "no-constructor-return": 2,
+    "no-continue": 2,
+    "no-else-return": 2,
+    "no-empty": [2, { "allowEmptyCatch": true }], // @override eslint:recommended
+    "no-eval": 2,
+    "no-extra-bind": 2,
+    "no-extra-label": 2,
+    "no-implicit-coercion": 2,
+    "no-implicit-globals": 2,
+    "no-implied-eval": 2,
+    "no-inline-comments": 1,
+    "no-invalid-this": 0, // @see babel/no-invalid-this
+    "no-iterator": 2,
+    "no-label-var": 2,
+    "no-lone-blocks": 2,
+    "no-lonely-if": 1,
+    "no-loop-func": 2,
+    "no-mixed-operators": [
+      2,
+      {
+        "allowSamePrecedence": false,
+        "groups": [
+          ["%", "**"],
+          ["%", "+"],
+          ["%", "-"],
+          ["%", "*"],
+          ["%", "/"],
+          ["/", "*"],
+          ["&", "|", "<<", ">>", ">>>"],
+          ["==", "!=", "===", "!=="],
+          ["&&", "||"]
+        ]
+      }
+    ],
+    "no-multi-assign": 2,
+    "no-multi-spaces": 1,
+    "no-negated-condition": 1,
+    "no-new": 2,
+    "no-new-func": 2,
+    "no-new-object": 2,
+    "no-new-wrappers": 2,
+    "no-nested-ternary": 0, // @see unicorn/no-nested-ternary
+    "no-param-reassign": [2, { "props": true, "ignorePropertyModificationsFor": ["draft"] }],
+    "no-plusplus": 1,
+    "no-process-exit": 0, // @deprecated, @override eslint:recommended: @see node/no-process-exit
+    "no-restricted-globals": 0, // @see unicorn/prefer-number-properties for restricted Number globals
+    "no-restricted-syntax": [
+      2,
+      {
+        "selector": "ForInStatement",
+        "message": "for..in loops iterate over the entire prototype chain, which is virtually never what you want. Use Object.{keys,values,entries}, and iterate over the resulting array."
+      },
+      {
+        "selector": "LabeledStatement",
+        "message": "Labels are a form of GOTO; using them makes code confusing and hard to maintain and understand."
+      },
+      {
+        "selector": "WithStatement",
+        "message": "`with` is disallowed in strict mode because it makes code impossible to predict and optimize."
+      }
+    ],
+    "no-return-assign": 1,
+    "no-return-await": 1,
+    "no-script-url": 2,
+    "no-self-compare": 2,
+    "no-sequences": 2,
+    "no-shadow": 2,
+    "no-template-curly-in-string": 1,
+    "no-throw-literal": 2,
+    "no-undef-init": 2,
+    "no-undefined": 0, // @see unicorn/no-useless-undefined
+    "no-underscore-dangle": [
+      1,
+      { "allowAfterThis": true, "allowAfterThisConstructor": true, "enforceInMethodNames": true }
+    ],
+    "no-unmodified-loop-condition": 2,
+    "no-unneeded-ternary": 1,
+    "no-unused-expressions": 0, // @see babel/no-unused-expressions
+    "no-unused-vars": [2, { "args": "after-used" }],
+    "no-use-before-define": 2,
+    "no-useless-call": 2,
+    "no-useless-computed-key": 1,
+    "no-useless-constructor": 1,
+    "no-useless-rename": [
+      2,
+      { "ignoreDestructuring": false, "ignoreImport": false, "ignoreExport": false }
+    ],
+    "no-var": 2,
+    "no-void": [2, { "allowAsStatement": true }],
+    "object-shorthand": [1, "always", { "ignoreConstructors": false, "avoidQuotes": true }],
+    "one-var": [2, "never"],
+    "operator-assignment": 1,
+    "prefer-arrow-callback": [1, { "allowNamedFunctions": false, "allowUnboundThis": true }],
+    "prefer-const": [1, { "destructuring": "any", "ignoreReadBeforeAssign": true }],
+    "prefer-destructuring": [
+      1,
+      {
+        "VariableDeclarator": { "array": false, "object": true },
+        "AssignmentExpression": { "array": true, "object": false }
+      },
+      {
+        "enforceForRenamedProperties": false
+      }
+    ],
+    "prefer-numeric-literals": 1,
+    "prefer-object-spread": 1,
+    "prefer-promise-reject-errors": 2,
+    "prefer-regex-literals": 1,
+    "prefer-rest-params": 1,
+    "prefer-spread": 0, // @see unicorn/prefer-spread
+    "prefer-template": 1,
+    "radix": 1,
+    "require-atomic-updates": 2,
+    "require-await": 2,
+    "sort-imports": 0, // @see import/order
+    "strict": [2, "global"],
+    "symbol-description": 2,
+    "valid-typeof": 0, // @override eslint:recommended: @see babel/valid-typeof
+    "vars-on-top": 1,
+    "babel/camelcase": [1, { "properties": "always" }],
+    "babel/new-cap": 1,
+    "babel/no-invalid-this": 2,
+    "babel/no-unused-expressions": 1,
+    "babel/valid-typeof": [2, { "requireStringLiterals": true }],
+    "import/exports-last": 1,
+    "import/extensions": [2, { "json": "always" }],
+    "import/first": 1,
+    "import/newline-after-import": 1,
+    "import/no-absolute-path": 2,
+    "import/no-amd": 2,
+    "import/no-anonymous-default-export": 2,
+    "import/no-cycle": 2,
+    "import/no-default-export": 2,
+    "import/no-deprecated": 1,
+    "import/no-dynamic-require": 2,
+    "import/no-extraneous-dependencies": [2, { "devDependencies": true }],
+    "import/no-internal-modules": 0,
+    "import/no-mutable-exports": 2,
+    "import/no-namespace": 1,
+    "import/no-restricted-paths": 0,
+    "import/no-self-import": 2,
+    "import/no-unassigned-import": 0,
+    "import/no-unresolved": [2, { "commonjs": true }], // @override import/errors: include commonjs.
+    "import/no-unused-modules": 1,
+    "import/no-useless-path-segments": 1,
+    "import/no-webpack-loader-syntax": 2,
+    "import/prefer-default-export": 0,
+    "import/unambiguous": 2,
+    "jest/consistent-test-it": 1,
+    "jest/lowercase-name": [1, { "ignore": ["describe", "test"] }],
+    "jest/no-deprecated-functions": 1,
+    "jest/no-duplicate-hooks": 2,
+    "jest/no-if": 2,
+    "jest/no-test-return-statement": 2,
+    "jest/prefer-called-with": 1,
+    "jest/prefer-expect-assertions": 1,
+    "jest/prefer-hooks-on-top": 1,
+    "jest/prefer-spy-on": 1,
+    "jest/prefer-strict-equal": 1,
+    "jest/prefer-todo": 1,
+    "jsdoc/check-examples": 1,
+    "jsdoc/check-indentation": 1,
+    "jsdoc/check-syntax": 1,
+    "jsdoc/match-description": 1,
+    "jsdoc/require-description": 0,
+    "jsdoc/require-description-complete-sentence": 1,
+    "jsdoc/require-hyphen-before-param-description": 1,
+    "jsdoc/require-param-description": 0, // @override jsdoc/recommended
+    "jsdoc/require-returns-description": 0, // @override jsdoc/recommended
+    "node/callback-return": 2,
+    "node/exports-style": [1, "module.exports"],
+    "node/file-extension-in-import": 0, // @see import/extensions
+    "node/global-require": 2,
+    "node/handle-callback-err": 2,
+    "node/no-callback-literal": 2,
+    "node/no-extraneous-import": 0, // @see import/no-extraneous-dependencies
+    "node/no-missing-import": 0, // @override node/recommended: @see import/no-unresolved
+    "node/no-missing-require": 0, // @override node/recommended: @see import/no-unresolved
+    "node/no-mixed-requires": 2,
+    "node/no-new-require": 2,
+    "node/no-path-concat": 2,
+    "node/no-process-env": 2,
+    "node/no-process-exit": 0, // @see unicorn/no-process-exit
+    "node/no-restricted-import": 0, // @see import/no-restricted-paths
+    "node/no-restricted-require": 0, // @see import/no-restricted-paths
+    "node/no-sync": 2,
+    "node/no-unpublished-import": 0, // @override node/recommended: @see import/no-internal-modules
+    "node/no-unpublished-require": 0, // @override node/recommended: @see import/no-internal-modules
+    "node/prefer-global/buffer": 1,
+    "node/prefer-global/console": 1,
+    "node/prefer-global/process": 1,
+    "node/prefer-global/text-decoder": 1,
+    "node/prefer-global/text-encoder": 1,
+    "node/prefer-global/url": 1,
+    "node/prefer-global/url-search-params": 1,
+    "node/prefer-promises/dns": 1,
+    "node/prefer-promises/fs": 1,
+    "promise/no-return-in-finally": 2, // @override promise/recommended severity
+    "prettier/prettier": 1, // @override prettier/recommended severity
+    "unicorn/better-regex": 1, // @override unicorn/recommended severity
+    "unicorn/catch-error-name": 1, // @override unicorn/recommended severity
+    "unicorn/consistent-function-scoping": 1, // @override unicorn/recommended severity
+    "unicorn/custom-error-definition": 2,
+    "unicorn/error-message": 1, // @override unicorn/recommended severity
+    "unicorn/escape-case": 1, // @override unicorn/recommended severity
+    "unicorn/expiring-todo-comments": 1, // @override unicorn/recommended severity
+    "unicorn/explicit-length-check": 0, // @override unicorn/recommended
+    "unicorn/filename-case": [1, { "cases": { "kebabCase": true, "pascalCase": true } }], // @override unicorn/recommended severity
+    "unicorn/import-index": 1, // @override unicorn/recommended severity
+    "unicorn/no-for-loop": 1, // @override unicorn/recommended severity
+    "unicorn/no-hex-escape": 1, // @override unicorn/recommended severity
+    "unicorn/no-nested-ternary": 1, // @override unicorn/recommended severity
+    "unicorn/no-null": 0, // @override unicorn/recommended
+    "unicorn/no-reduce": 1, // @override unicorn/recommended severity
+    "unicorn/no-unreadable-array-destructuring": 1, // @override unicorn/recommended severity
+    "unicorn/no-unused-properties": 1,
+    "unicorn/no-useless-undefined": 1, // @override unicorn/recommended severity
+    "unicorn/no-zero-fractions": 0, // @override unicorn/recommended
+    "unicorn/number-literal-case": 1, // @override unicorn/recommended severity
+    "unicorn/prefer-dataset": 1, // @override unicorn/recommended severity
+    "unicorn/prefer-flat-map": 0, // @override unicorn/recommended
+    "unicorn/prefer-includes": 1, // @override unicorn/recommended severity
+    "unicorn/prefer-modern-dom-apis": 1, // @override unicorn/recommended severity
+    "unicorn/prefer-negative-index": 1, // @override unicorn/recommended severity
+    "unicorn/prefer-node-append": 1, // @override unicorn/recommended severity
+    "unicorn/prefer-node-remove": 1, // @override unicorn/recommended severity
+    "unicorn/prefer-number-properties": 1, // @override unicorn/recommended severity
+    "unicorn/prefer-optional-catch-binding": 1, // @override unicorn/recommended severity
+    "unicorn/prefer-query-selector": 1, // @override unicorn/recommended severity
+    "unicorn/prefer-replace-all": 2,
+    "unicorn/prefer-set-has": 1, // @override unicorn/recommended severity
+    "unicorn/prefer-spread": 1, // @override unicorn/recommended severity
+    "unicorn/prefer-string-slice": 1, // @override unicorn/recommended severity
+    "unicorn/prefer-type-error": 1, // @override unicorn/recommended severity
+    "unicorn/prevent-abbreviations": 0 // @override unicorn/recommended
+  },
+  "settings": {
+    "import/resolver": {
+      "node": { "extensions": [".js", ".json", ".jsx", ".ts"] }
+    },
+    "jsdoc": {
+      "mode": "permissive"
+    }
+  },
+  "overrides": [
+    {
+      "files": ["*.md"],
+      "parserOptions": {
+        "ecmaFeatures": { "impliedStrict": true },
+        "sourceType": "script"
+      }
+    },
+    {
+      "files": ["*.ts", "*.tsx"],
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "createDefaultProgram": true,
+        "project": "tsconfig.json"
+      },
+      "extends": [
+        "plugin:import/typescript",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking",
+        "prettier/@typescript-eslint"
+      ],
+      "rules": {
+        "default-param-last": 0, // @see @typescript-eslint/default-param-last
+        "dot-notation": 0, // @see @typescript-eslint/dot-notation
+        "no-implied-eval": 0, // @see @typescript-eslint/no-implied-eval
+        "no-shadow": 0, // @see @typescript-eslint/no-shadow
+        "no-throw-literal": 0, // @see @typescript-eslint/no-throw-literal
+        "no-underscore-dangle": 0, // @see @typescript-eslint/naming-convention
+        "no-useless-constructor": 0, // @see @typescript-eslint/no-useless-constructor
+        "require-await": 0, // @see @typescript-eslint/require-await
+        "babel/camelcase": 0, // @see @typescript-eslint/naming-convention
+        "babel/new-cap": 0, // @see @typescript-eslint/naming-convention
+        "babel/no-invalid-this": 0, // @see @typescript-eslint/no-invalid-this
+        "babel/no-unused-expressions": 0, // @see @typescript-eslint/no-unused-expressions
+        "import/no-commonjs": 2,
+        "node/no-missing-import": 0, // @override node/recommended: @see import/no-unresolved
+        "node/no-unsupported-features/es-syntax": 0, // @override node/recommended: @see @babel/preset-env
+        "promise/valid-params": 0, // @override promise/recommended
+        "@typescript-eslint/array-type": [1, { "default": "array-simple" }],
+        "@typescript-eslint/ban-ts-comment": [2, { "ts-expect-error": "allow-with-description" }], // @override @typescript-eslint/recommended
+        "@typescript-eslint/consistent-type-definitions": [1, "interface"],
+        "@typescript-eslint/default-param-last": 1,
+        "@typescript-eslint/dot-notation": 1,
+        "@typescript-eslint/explicit-module-boundary-types": 0, // @override @typescript-eslint/recommended
+        "@typescript-eslint/explicit-function-return-type": 0, // @override @typescript-eslint/recommended
+        "@typescript-eslint/explicit-member-accessibility": [1, { "accessibility": "no-public" }],
+        "@typescript-eslint/method-signature-style": 1,
+        "@typescript-eslint/naming-convention": [
+          1,
+          { "selector": "accessor", "format": ["camelCase"] },
+          { "selector": "enumMember", "format": ["PascalCase"] },
+          { "selector": "function", "format": ["camelCase"] },
+          { "selector": "method", "format": ["camelCase"] },
+          {
+            "selector": "parameter",
+            "format": ["camelCase", "PascalCase"],
+            "leadingUnderscore": "allow"
+          },
+          { "selector": "typeLike", "format": ["PascalCase"] }
+        ],
+        "@typescript-eslint/no-floating-promises": 1,
+        "@typescript-eslint/no-explicit-any": 0, // @override @typescript-eslint/recommended
+        "@typescript-eslint/no-implied-eval": 2,
+        "@typescript-eslint/no-invalid-this": 0,
+        "@typescript-eslint/no-invalid-void-type": 1,
+        "@typescript-eslint/no-non-null-assertion": 0, // @override @typescript-eslint/recommended
+        "@typescript-eslint/no-require-imports": 2,
+        "@typescript-eslint/no-shadow": 2,
+        "@typescript-eslint/no-throw-literal": 2,
+        "@typescript-eslint/no-unnecessary-boolean-literal-compare": 1,
+        "@typescript-eslint/no-unnecessary-condition": 2,
+        "@typescript-eslint/no-unnecessary-type-arguments": 1,
+        "@typescript-eslint/no-unused-expressions": 2,
+        "@typescript-eslint/no-unused-vars": [1, { "argsIgnorePattern": "^_" }], // @override @typescript-eslint/recommended severity
+        "@typescript-eslint/no-useless-constructor": 1,
+        "@typescript-eslint/prefer-for-of": 1,
+        "@typescript-eslint/prefer-literal-enum-member": 2,
+        "@typescript-eslint/prefer-nullish-coalescing": 2,
+        "@typescript-eslint/prefer-optional-chain": 1,
+        "@typescript-eslint/prefer-readonly": 2,
+        "@typescript-eslint/prefer-reduce-type-parameter": 1,
+        "@typescript-eslint/unbound-method": 0
+      },
+      "settings": {
+        "import/resolver": {
+          "node": { "extensions": [".js", ".json", ".jsx", ".ts", ".tsx"] },
+          "typescript": { "directory": "." }
+        }
+      }
+    },
+    {
+      "files": ["*.d.ts"],
+      "rules": {
+        "import/no-default-export": 0,
+        "import/unambiguous": 0
+      }
+    },
+    {
+      "files": ["./*.js", "bin/*.js"],
+      "rules": {
+        "no-console": 0,
+        "import/no-default-export": 0,
+        "import/unambiguous": 0,
+        "node/global-require": 0,
+        "node/no-process-env": 0,
+        "node/no-sync": 0
+      }
+    }
+  ]
+}
