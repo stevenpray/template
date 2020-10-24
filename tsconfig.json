@@ -25,5 +25,5 @@
     "strictPropertyInitialization": false,
     "target": "ESNext"
   },
-  "include": ["global.d.ts", "jest.setup.ts", "src/**/*"]
+  "include": ["jest.setup.ts", "src/**/*"]
 }
