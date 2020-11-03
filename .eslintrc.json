@@ -187,7 +187,6 @@
     "babel/no-invalid-this": 2,
     "babel/no-unused-expressions": 1,
     "babel/valid-typeof": [2, { "requireStringLiterals": true }],
-    "import/exports-last": 1,
     "import/extensions": [2, { "json": "always" }],
     "import/first": 1,
     "import/newline-after-import": 1,
