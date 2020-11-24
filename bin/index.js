@@ -1,17 +1,21 @@
 #!/usr/bin/env node
 
-require("dotenv-expand")(require("dotenv").config());
-const { pathExistsSync } = require("fs-extra");
+const dotenv = require("dotenv");
+const expand = require("dotenv-expand");
+const fs = require("fs-extra");
 const root = require("app-root-path");
+
+expand(dotenv.config());
 
 /**
  * @type {import("../src")}
  */
 const lib = (() => {
-  if (pathExistsSync(root.resolve("lib/index.js"))) {
+  if (fs.pathExistsSync(root.resolve("lib/index.js"))) {
     return root.require("lib");
   }
-  require("@babel/register")({ extensions: [".js", ".ts"] });
+  const register = require("@babel/register");
+  register({ extensions: [".js", ".ts"] });
   return root.require("src");
 })();
 
