@@ -10,7 +10,6 @@ module.exports = {
   scripts: {
     clean: rimraf(dir.out),
     build: series(
-      "tsc --noEmit",
       "tsc --project tsconfig.types.json",
       `babel --quiet --env-name=${env} --extensions=".js,.ts" --ignore "**/*.test.ts" --source-maps --out-dir="${dir.out}" "${dir.src}"`,
     ),
