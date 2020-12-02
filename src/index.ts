@@ -1,9 +1,8 @@
 import "reflect-metadata";
-import parser from "yargs-parser";
+import minimist from "minimist";
 
-export const main = async (args: string[]) => {
+export const main = (argv: Readonly<string[]>) => {
+  const args = minimist(argv.slice(2));
   // eslint-disable-next-line no-console
-  console.log(parser(args.slice(2)));
-
-  return Promise.resolve();
+  console.log(args);
 };

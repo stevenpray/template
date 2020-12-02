@@ -1,7 +1,15 @@
 const { rimraf, series } = require("nps-utils");
+const root = require("app-root-path");
+require("./env.js");
+
+/**
+ * @type {import("type-fest").PackageJson}
+ */
+const pkg = root.require("package.json");
+
+const dir = { ...pkg.directories, src: "src" };
 
 const env = process.env.NODE_ENV || "development";
-const dir = { bin: "bin", out: "lib", src: "src" };
 
 module.exports = {
   options: {

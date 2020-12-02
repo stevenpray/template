@@ -1,5 +1,2 @@
-import dotenv from "dotenv";
-import expand from "dotenv-expand";
+import "./env";
 import "jest-extended";
-
-expand(dotenv.config());

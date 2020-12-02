@@ -2,5 +2,5 @@
   "ext": "js json ts",
   "ignore": ["*.d.ts", "*.test.ts"],
   "signal": "SIGTERM",
-  "watch": ["bin", "src"]
+  "watch": [".env", "bin", "src"]
 }
