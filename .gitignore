@@ -1,5 +1,6 @@
 *.env
 *.log
+*.tsbuildinfo
 *.tgz
 /coverage/
 /lib/
@@ -10,4 +11,3 @@ docker-compose.override.yml
 http-client.private.env.json
 node_modules/
 npm-debug.log*
-tsconfig.tsbuildinfo
