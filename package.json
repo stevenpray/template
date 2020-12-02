@@ -5,6 +5,10 @@
   "license": "MIT",
   "author": "Steven Pray <steven@stevenpray.com>",
   "repository": "github:stevenpray/template-nodejs",
+  "directories": {
+    "bin": "bin",
+    "lib": "lib"
+  },
   "files": [
     "bin",
     "lib"
