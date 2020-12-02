@@ -8,7 +8,7 @@ require("../env.js");
  * @type {import("../src")}
  */
 const lib = (() => {
-  if (fs.pathExistsSync(root.resolve("lib/index.js"))) {
+  if (fs.pathExistsSync(root.resolve("lib"))) {
     return root.require("lib");
   }
   const register = require("@babel/register");
@@ -16,7 +16,4 @@ const lib = (() => {
   return root.require("src");
 })();
 
-lib.main(process.argv).catch((error) => {
-  console.error(error);
-  process.exit(error?.code ?? 1);
-});
+void lib.main(process.argv);
