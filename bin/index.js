@@ -1,11 +1,8 @@
 #!/usr/bin/env node
 
-const dotenv = require("dotenv");
-const expand = require("dotenv-expand");
 const fs = require("fs-extra");
 const root = require("app-root-path");
-
-expand(dotenv.config());
+require("../env.js");
 
 /**
  * @type {import("../src")}

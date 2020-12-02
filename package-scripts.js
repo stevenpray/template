@@ -1,4 +1,5 @@
 const { rimraf, series } = require("nps-utils");
+require("./env.js");
 
 const env = process.env.NODE_ENV || "development";
 const dir = { bin: "bin", out: "lib", src: "src" };
