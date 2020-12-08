@@ -1,3 +1,5 @@
+"use strict";
+
 const { rimraf, series } = require("nps-utils");
 const root = require("app-root-path");
 require("./env.js");
