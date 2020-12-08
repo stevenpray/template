@@ -16,6 +16,7 @@
     "moduleResolution": "Node",
     "newLine": "LF",
     "noEmit": true,
+    "noEmitOnError": true,
     "outDir": "lib",
     "preserveConstEnums": true,
     "removeComments": false,
