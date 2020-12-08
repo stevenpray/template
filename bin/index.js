@@ -16,4 +16,4 @@ const lib = (() => {
   return root.require("src");
 })();
 
-void lib.main(process.argv);
+void lib.cli(process.argv);
