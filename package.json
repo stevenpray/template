@@ -6,7 +6,6 @@
   "author": "Steven Pray <steven@stevenpray.com>",
   "repository": "github:stevenpray/template-nodejs",
   "directories": {
-    "bin": "bin",
     "lib": "lib"
   },
   "files": [
@@ -36,9 +35,9 @@
     "reflect-metadata": "0.1.13"
   },
   "devDependencies": {
-    "@babel/cli": "7.12.8",
-    "@babel/core": "7.12.9",
-    "@babel/node": "7.12.6",
+    "@babel/cli": "7.12.10",
+    "@babel/core": "7.12.10",
+    "@babel/node": "7.12.10",
     "@babel/plugin-proposal-class-properties": "7.12.1",
     "@babel/plugin-proposal-decorators": "7.12.1",
     "@babel/plugin-proposal-do-expressions": "7.12.1",
@@ -50,10 +49,10 @@
     "@babel/plugin-proposal-pipeline-operator": "7.12.1",
     "@babel/plugin-proposal-private-methods": "7.12.1",
     "@babel/plugin-proposal-throw-expressions": "7.12.1",
-    "@babel/plugin-transform-runtime": "7.12.1",
-    "@babel/preset-env": "7.12.7",
+    "@babel/plugin-transform-runtime": "7.12.10",
+    "@babel/preset-env": "7.12.11",
     "@babel/preset-typescript": "7.12.7",
-    "@babel/register": "7.12.1",
+    "@babel/register": "7.12.10",
     "@semantic-release/changelog": "5.0.1",
     "@semantic-release/git": "9.0.0",
     "@types/app-root-path": "1.2.4",
@@ -63,16 +62,16 @@
     "@types/core-js": "2.5.4",
     "@types/eslint": "7.2.6",
     "@types/eslint-plugin-prettier": "3.1.0",
-    "@types/fs-extra": "9.0.4",
-    "@types/jest": "26.0.18",
+    "@types/fs-extra": "9.0.5",
+    "@types/jest": "26.0.19",
     "@types/lodash": "4.14.165",
     "@types/minimist": "1.2.1",
-    "@types/node": "14.14.11",
+    "@types/node": "14.14.14",
     "@types/nodemon": "1.19.0",
     "@types/prettier": "2.1.5",
     "@types/semantic-release": "17.2.0",
-    "@typescript-eslint/eslint-plugin": "4.9.1",
-    "@typescript-eslint/parser": "4.9.1",
+    "@typescript-eslint/eslint-plugin": "4.10.0",
+    "@typescript-eslint/parser": "4.10.0",
     "babel-jest": "26.6.3",
     "babel-plugin-transform-typescript-metadata": "0.3.1",
     "eslint": "7.15.0",
@@ -85,7 +84,7 @@
     "eslint-plugin-json": "2.1.2",
     "eslint-plugin-markdown": "1.0.2",
     "eslint-plugin-node": "11.1.0",
-    "eslint-plugin-prettier": "3.2.0",
+    "eslint-plugin-prettier": "3.3.0",
     "eslint-plugin-promise": "4.2.1",
     "eslint-plugin-unicorn": "23.0.0",
     "jest": "26.6.3",
@@ -96,6 +95,6 @@
     "prettier": "2.2.1",
     "semantic-release": "17.3.0",
     "type-fest": "0.20.2",
-    "typescript": "4.1.2"
+    "typescript": "4.1.3"
   }
 }
