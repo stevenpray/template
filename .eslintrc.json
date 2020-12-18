@@ -150,6 +150,7 @@
     ],
     "no-var": 2,
     "no-void": [2, { "allowAsStatement": true }],
+    "no-warning-comments": 1,
     "object-shorthand": [1, "always", { "ignoreConstructors": false, "avoidQuotes": true }],
     "one-var": [2, "never"],
     "operator-assignment": 1,
