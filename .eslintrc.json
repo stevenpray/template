@@ -9,8 +9,7 @@
   },
   "parserOptions": {
     "ecmaVersion": 2020,
-    "ecmaFeatures": { "jsx": true },
-    "sourceType": "module"
+    "sourceType": "script"
   },
   "plugins": [
     "@typescript-eslint",
@@ -62,7 +61,6 @@
     "no-array-constructor": 2,
     "no-await-in-loop": 2,
     "no-confusing-arrow": [2, { "allowParens": true }],
-    "no-console": 1,
     "no-constructor-return": 2,
     "no-continue": 2,
     "no-else-return": 2,
@@ -152,6 +150,7 @@
     ],
     "no-var": 2,
     "no-void": [2, { "allowAsStatement": true }],
+    "no-warning-comments": 1,
     "object-shorthand": [1, "always", { "ignoreConstructors": false, "avoidQuotes": true }],
     "one-var": [2, "never"],
     "operator-assignment": 1,
@@ -194,7 +193,6 @@
     "import/no-amd": 2,
     "import/no-anonymous-default-export": 2,
     "import/no-cycle": 2,
-    "import/no-default-export": 2,
     "import/no-deprecated": 1,
     "import/no-dynamic-require": 2,
     "import/no-extraneous-dependencies": [2, { "devDependencies": true }],
@@ -208,6 +206,7 @@
     "import/no-unused-modules": 1,
     "import/no-useless-path-segments": 1,
     "import/no-webpack-loader-syntax": 2,
+    "import/order": 1,
     "import/prefer-default-export": 0,
     "import/unambiguous": 2,
     "jest/consistent-test-it": 1,
@@ -234,7 +233,6 @@
     "node/callback-return": 2,
     "node/exports-style": [1, "module.exports"],
     "node/file-extension-in-import": 0, // @see import/extensions
-    "node/global-require": 2,
     "node/handle-callback-err": 2,
     "node/no-callback-literal": 2,
     "node/no-extraneous-import": 0, // @see import/no-extraneous-dependencies
@@ -243,15 +241,11 @@
     "node/no-mixed-requires": 2,
     "node/no-new-require": 2,
     "node/no-path-concat": 2,
-    "node/no-process-env": 2,
     "node/no-process-exit": 0, // @see unicorn/no-process-exit
     "node/no-restricted-import": 0, // @see import/no-restricted-paths
     "node/no-restricted-require": 0, // @see import/no-restricted-paths
-    "node/no-sync": 2,
     "node/no-unpublished-import": 0, // @override node/recommended: @see import/no-internal-modules
     "node/no-unpublished-require": 0, // @override node/recommended: @see import/no-internal-modules
-    "node/no-unsupported-features/es-builtins": 0, // @override node/recommended: @see @babel/preset-env
-    "node/no-unsupported-features/es-syntax": 0, // @override node/recommended: @see @babel/preset-env
     "node/prefer-global/buffer": 1,
     "node/prefer-global/console": 1,
     "node/prefer-global/process": 1,
@@ -330,6 +324,7 @@
       "rules": {
         "default-param-last": 0, // @see @typescript-eslint/default-param-last
         "dot-notation": 0, // @see @typescript-eslint/dot-notation
+        "no-duplicate-imports": 0, // @see @typescript-eslint/no-duplicate-imports
         "no-implied-eval": 0, // @see @typescript-eslint/no-implied-eval
         "no-shadow": 0, // @see @typescript-eslint/no-shadow
         "no-throw-literal": 0, // @see @typescript-eslint/no-throw-literal
@@ -341,13 +336,19 @@
         "babel/no-invalid-this": 0, // @see @typescript-eslint/no-invalid-this
         "babel/no-unused-expressions": 0, // @see @typescript-eslint/no-unused-expressions
         "import/no-commonjs": 2,
+        "jsdoc/require-jsdoc": 0, // @override jsdoc/recommended
         "node/no-missing-import": 0, // @override node/recommended: @see import/no-unresolved
+        "node/no-unsupported-features/es-builtins": 0, // @override node/recommended: @see @babel/preset-env
+        "node/no-unsupported-features/es-syntax": 0, // @override node/recommended: @see @babel/preset-env
         "promise/valid-params": 0, // @override promise/recommended
         "@typescript-eslint/array-type": [1, { "default": "array-simple" }],
         "@typescript-eslint/ban-ts-comment": [2, { "ts-expect-error": "allow-with-description" }], // @override @typescript-eslint/recommended
         "@typescript-eslint/consistent-type-definitions": [1, "interface"],
+        "@typescript-eslint/consistent-type-imports": 2,
         "@typescript-eslint/default-param-last": 1,
         "@typescript-eslint/dot-notation": 1,
+        "@typescript-eslint/no-duplicate-imports": 1,
+        "@typescript-eslint/no-empty-interface": 1, // @override @typescript-eslint/recommended severity
         "@typescript-eslint/explicit-module-boundary-types": 0, // @override @typescript-eslint/recommended
         "@typescript-eslint/explicit-function-return-type": 0, // @override @typescript-eslint/recommended
         "@typescript-eslint/explicit-member-accessibility": [1, { "accessibility": "no-public" }],
@@ -365,8 +366,8 @@
           },
           { "selector": "typeLike", "format": ["PascalCase"] }
         ],
-        "@typescript-eslint/no-floating-promises": 1,
         "@typescript-eslint/no-explicit-any": 0, // @override @typescript-eslint/recommended
+        "@typescript-eslint/no-floating-promises": 1,
         "@typescript-eslint/no-implied-eval": 2,
         "@typescript-eslint/no-invalid-this": 0,
         "@typescript-eslint/no-invalid-void-type": 1,
@@ -403,16 +404,20 @@
       }
     },
     {
-      "files": ["./*.js", "bin/*.js"],
+      "files": ["src/**/*"],
+      "parserOptions": {
+        "ecmaVersion": 2020,
+        "ecmaFeatures": { "jsx": true },
+        "sourceType": "module"
+      },
       "rules": {
-        "no-console": 0,
-        "import/no-default-export": 0,
-        "import/unambiguous": 0,
-        "node/global-require": 0,
-        "node/no-process-env": 0,
-        "node/no-sync": 0,
-        "node/no-unsupported-features/es-builtins": 2,
-        "node/no-unsupported-features/es-syntax": 2
+        "no-console": 1,
+        "import/no-default-export": 2,
+        "node/global-require": 2,
+        "node/no-process-env": 2,
+        "node/no-sync": 2,
+        "node/no-unsupported-features/es-builtins": 0, // @override node/recommended: @see @babel/preset-env
+        "node/no-unsupported-features/es-syntax": 0 // @override node/recommended: @see @babel/preset-env
       }
     }
   ]

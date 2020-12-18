@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 
+"use strict";
+
 const fs = require("fs-extra");
 const root = require("app-root-path");
-require("../env.js");
+require("../env");
 
 /**
  * @type {import("../src")}
@@ -16,4 +18,4 @@ const lib = (() => {
   return root.require("src");
 })();
 
-void lib.main(process.argv);
+void lib.cli(process.argv);

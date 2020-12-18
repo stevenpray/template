@@ -1,3 +1,5 @@
+"use strict";
+
 const { rimraf, series } = require("nps-utils");
 const root = require("app-root-path");
 require("./env.js");
@@ -7,7 +9,7 @@ require("./env.js");
  */
 const pkg = root.require("package.json");
 
-const dir = { ...pkg.directories, src: "src" };
+const dir = { ...pkg.directories, bin: "bin", src: "src" };
 
 const env = process.env.NODE_ENV || "development";
 
@@ -16,10 +18,10 @@ module.exports = {
     logLevel: "warn",
   },
   scripts: {
-    clean: rimraf(dir.out),
+    clean: rimraf(dir.lib),
     build: series(
       "tsc --project tsconfig.types.json",
-      `babel --quiet --env-name=${env} --extensions=".js,.ts" --ignore "**/*.test.ts" --source-maps --out-dir="${dir.out}" "${dir.src}"`,
+      `babel --quiet --env-name=${env} --extensions=".js,.ts" --ignore "**/*.test.ts" --source-maps --out-dir="${dir.lib}" "${dir.src}"`,
     ),
     lint: `eslint "${dir.bin}/**" "${dir.src}/**" *.js *.md`,
     test: "jest --coverage",
@@ -27,7 +29,7 @@ module.exports = {
     npm: {
       prepack: series.nps("clean", "build"),
       postpack: series.nps("clean"),
-      start: "nodemon bin/index.js",
+      start: "nodemon bin",
       test: series.nps("lint", "test"),
     },
   },
