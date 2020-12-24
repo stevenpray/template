@@ -199,6 +199,7 @@
     "import/no-internal-modules": 0,
     "import/no-mutable-exports": 2,
     "import/no-namespace": 1,
+    // TODO: "import/no-relative-parent-imports": 2,
     "import/no-restricted-paths": 0,
     "import/no-self-import": 2,
     "import/no-unassigned-import": 0,
@@ -294,7 +295,7 @@
   },
   "settings": {
     "import/resolver": {
-      "node": { "extensions": [".js", ".json", ".jsx", ".ts"] }
+      "node": { "extensions": [".js", ".json", ".jsx"] }
     },
     "jsdoc": {
       "mode": "permissive"
@@ -335,7 +336,6 @@
         "babel/new-cap": 0, // @see @typescript-eslint/naming-convention
         "babel/no-invalid-this": 0, // @see @typescript-eslint/no-invalid-this
         "babel/no-unused-expressions": 0, // @see @typescript-eslint/no-unused-expressions
-        "import/no-commonjs": 2,
         "jsdoc/require-jsdoc": 0, // @override jsdoc/recommended
         "node/no-missing-import": 0, // @override node/recommended: @see import/no-unresolved
         "node/no-unsupported-features/es-builtins": 0, // @override node/recommended: @see @babel/preset-env
@@ -412,6 +412,8 @@
       },
       "rules": {
         "no-console": 1,
+        "strict": [2, "never"],
+        "import/no-commonjs": 2,
         "import/no-default-export": 2,
         "node/global-require": 2,
         "node/no-process-env": 2,
