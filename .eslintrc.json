@@ -330,6 +330,7 @@
         "no-shadow": 0, // @see @typescript-eslint/no-shadow
         "no-throw-literal": 0, // @see @typescript-eslint/no-throw-literal
         "no-underscore-dangle": 0, // @see @typescript-eslint/naming-convention
+        "no-use-before-define": 0, // @see @typescript-eslint/no-use-before-define
         "no-useless-constructor": 0, // @see @typescript-eslint/no-useless-constructor
         "require-await": 0, // @see @typescript-eslint/require-await
         "babel/camelcase": 0, // @see @typescript-eslint/naming-convention
@@ -378,6 +379,7 @@
         "@typescript-eslint/no-unnecessary-boolean-literal-compare": 1,
         "@typescript-eslint/no-unnecessary-condition": 2,
         "@typescript-eslint/no-unnecessary-type-arguments": 1,
+        "@typescript-eslint/no-use-before-define": 2,
         "@typescript-eslint/no-unused-expressions": 2,
         "@typescript-eslint/no-unused-vars": [1, { "argsIgnorePattern": "^_" }], // @override @typescript-eslint/recommended severity
         "@typescript-eslint/no-useless-constructor": 1,
