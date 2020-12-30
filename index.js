@@ -11,8 +11,7 @@ const lib = (() => {
   if (fs.pathExistsSync(root.resolve("lib"))) {
     return root.require("lib");
   }
-  const register = require("@babel/register");
-  register({ extensions: [".js", ".ts"] });
+  require("@babel/register")({ extensions: [".js", ".ts"] });
   return root.require("src");
 })();
 

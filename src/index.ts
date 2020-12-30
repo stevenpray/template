@@ -1,3 +1,4 @@
 import "reflect-metadata";
+import { Cli } from "./cli";
 
-export * from "./cli";
+export const cli = new Cli();

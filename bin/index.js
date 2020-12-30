@@ -2,4 +2,4 @@
 
 "use strict";
 
-void require("..").cli(process.argv);
+void require("..").cli.run();
