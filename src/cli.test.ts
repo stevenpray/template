@@ -1,4 +1,6 @@
+import type { CliCommandClass } from "./cli";
 import { Cli } from "./cli";
+import { Command } from "./command";
 
 describe("Cli", () => {
   it("should be exported class", () => {
@@ -12,5 +14,19 @@ describe("Cli", () => {
     expect(new Cli().run).toBeFunction();
     expect(new Cli().run()).toBeInstanceOf(Promise);
     expect(await new Cli().run()).toBeUndefined();
+  });
+
+  it("should run command by name", async () => {
+    expect.assertions(2);
+    class TestCommand extends Command {
+      run() {
+        return undefined;
+      }
+    }
+    const commands = new Map<string, CliCommandClass>([["test", TestCommand]]);
+    const cli = new Cli({ commands });
+    const promise = cli.run(["", "", "test"]);
+    expect(promise).toBeInstanceOf(Promise);
+    expect(await promise).toBeUndefined();
   });
 });

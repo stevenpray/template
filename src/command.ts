@@ -1,10 +1,14 @@
-import type { Maybe, MaybePromise } from "./types";
+import type { CliCommand, CliCommandOptions } from "./cli";
+import type { MaybePromise } from "./types";
 
-export interface CommandOptions {
-  [key: string]: CommandOptions | boolean | number | string;
-}
+export type CommandOptions = CliCommandOptions;
 
-export interface Command {
-  run: () => MaybePromise<void>;
-  exit?: (code: number, signal: Maybe<NodeJS.Signals>) => MaybePromise<void>;
+export abstract class Command implements CliCommand {
+  protected readonly options?: Readonly<CommandOptions>;
+
+  constructor(options?: CommandOptions) {
+    this.options = options;
+  }
+
+  abstract run(): MaybePromise<void>;
 }

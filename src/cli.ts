@@ -2,16 +2,25 @@ import { constants } from "os";
 import { defaultsDeep } from "lodash";
 import minimist from "minimist";
 import ptimeout from "p-timeout";
-import pino from "pino";
 import type Pino from "pino";
+import pino from "pino";
 import type { Class, SetOptional } from "type-fest";
-import type { Command, CommandOptions } from "./command";
 import type { Logger } from "./logger";
-import type { Maybe } from "./types";
+import type { Maybe, MaybePromise } from "./types";
 
-type CliCommandClass = Class<Command, [Maybe<CommandOptions>]>;
+export interface CliCommandOptions {
+  [name: string]: CliCommandOptions | boolean | number | string;
+}
+
+export interface CliCommand {
+  run: () => MaybePromise<void>;
+  exit?: (code: number, signal: NodeJS.Signals | null) => MaybePromise<void>;
+}
+
+export type CliCommandClass = Class<CliCommand, [CliCommandOptions | undefined]>;
 
 interface CliDefaults {
+  commands: ReadonlyMap<Maybe<string>, CliCommandClass>;
   exit: {
     signals: NodeJS.Signals[];
     timeout: number;
@@ -21,8 +30,8 @@ interface CliDefaults {
 export type CliOptions = SetOptional<CliDefaults>;
 
 export class Cli {
-  private static readonly commands: ReadonlyMap<Maybe<string>, CliCommandClass> = new Map();
   private static readonly defaults: Readonly<CliDefaults> = {
+    commands: new Map<Maybe<string>, CliCommandClass>(),
     exit: {
       signals: ["SIGBREAK", "SIGHUP", "SIGINT", "SIGTERM", "SIGUSR2"],
       timeout: 10000,
@@ -32,7 +41,7 @@ export class Cli {
   private readonly config: Readonly<CliOptions & CliDefaults>;
   private readonly logger: Logger;
   private exiting: boolean;
-  private command?: Command;
+  private command?: CliCommand;
 
   constructor(options?: CliOptions) {
     this.config = defaultsDeep(options, Cli.defaults) as CliOptions & CliDefaults;
@@ -96,7 +105,7 @@ export class Cli {
     const [name] = _;
 
     // Find command by name.
-    const CommandClass = Cli.commands.get(name);
+    const CommandClass = this.config.commands.get(name);
     if (CommandClass) {
       this.command = new CommandClass(options);
     }
@@ -110,14 +119,16 @@ export class Cli {
     }
     this.exiting = true;
     try {
+      // Attempt to exit gracefully if the command defines an exit function.
       const exit = this.command?.exit?.(code, signal);
       if (exit instanceof Promise) {
         await ptimeout(exit, this.config.exit.timeout);
       }
       process.nextTick(process.exit.bind(process, code));
     } catch (error) {
+      // Graceful exit failed with error.
       this.logger.error(error);
-      process.kill(process.pid, "SIGKILL");
+      process.nextTick(process.kill.bind(process, process.pid, "SIGKILL"));
     }
   }
 }
