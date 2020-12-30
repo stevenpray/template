@@ -32,6 +32,8 @@
     "fs-extra": "9.0.1",
     "lodash": "4.17.20",
     "minimist": "1.2.5",
+    "pino": "6.8.0",
+    "pino-pretty": "4.3.0",
     "reflect-metadata": "0.1.13",
     "type-fest": "0.20.2"
   },
@@ -69,6 +71,7 @@
     "@types/minimist": "1.2.1",
     "@types/node": "14.14.16",
     "@types/nodemon": "1.19.0",
+    "@types/pino": "6.3.4",
     "@types/prettier": "2.1.6",
     "@types/semantic-release": "17.2.0",
     "@typescript-eslint/eslint-plugin": "4.11.1",
