@@ -1,6 +1,5 @@
-import type { CliCommandClass } from "./cli";
 import { Cli } from "./cli";
-import { Command } from "./command";
+import { Command, CommandClass } from "./command";
 import { Nullable } from "./types";
 
 describe("Cli", () => {
@@ -24,7 +23,7 @@ describe("Cli", () => {
         return undefined;
       }
     }
-    const commands = new Map<Nullable<string>, CliCommandClass>([["test", TestCommand]]);
+    const commands = new Map<Nullable<string>, CommandClass>([["test", TestCommand]]);
     const cli = new Cli({ commands });
     const promise = cli.run(["", "", "test"]);
     expect(promise).toBeInstanceOf(Promise);

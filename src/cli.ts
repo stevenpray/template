@@ -3,49 +3,60 @@ import { defaultsDeep } from "lodash";
 import minimist from "minimist";
 import ptimeout from "p-timeout";
 import type Pino from "pino";
-import pino from "pino";
-import type { Class, SetOptional } from "type-fest";
+import pino, { destination } from "pino";
+import type { SetOptional } from "type-fest";
+import type { Command, CommandClass } from "./command";
+import { Context } from "./context";
 import type { Logger } from "./logger";
-import type { Nullable, MaybePromise } from "./types";
+import type { Nullable } from "./types";
 
-export interface CliCommandOptions {
-  [name: string]: CliCommandOptions | boolean | number | string;
+type Signal = NodeJS.Signals;
+
+export interface CliArgs {
+  [name: string]: any;
+  debug: boolean;
 }
-
-export interface CliCommand {
-  run: () => MaybePromise<void>;
-  exit?: (code: number, signal: NodeJS.Signals | null) => MaybePromise<void>;
-}
-
-export type CliCommandClass = Class<CliCommand, [CliCommandOptions | undefined]>;
 
 interface CliDefaults {
-  commands: ReadonlyMap<Nullable<string>, CliCommandClass>;
+  commands: ReadonlyMap<Nullable<string>, CommandClass>;
   exit: {
-    signals: NodeJS.Signals[];
+    signals: Signal[];
     timeout: number;
   };
 }
 
-export type CliOptions = SetOptional<CliDefaults>;
+export interface CliOptions extends SetOptional<CliDefaults> {
+  logger?: Logger;
+}
+
+type CliConfig = CliOptions & CliDefaults;
 
 export class Cli {
   private static readonly defaults: Readonly<CliDefaults> = {
-    commands: new Map<Nullable<string>, CliCommandClass>(),
+    commands: new Map<Nullable<string>, CommandClass>(),
     exit: {
       signals: ["SIGBREAK", "SIGHUP", "SIGINT", "SIGTERM", "SIGUSR2"],
       timeout: 10000,
     },
   };
 
-  private readonly config: Readonly<CliOptions & CliDefaults>;
+  private readonly config: Readonly<CliConfig>;
   private readonly logger: Logger;
+  private readonly context: Context;
+
   private exiting: boolean;
-  private command?: CliCommand;
+  private command?: Command;
 
   constructor(options?: CliOptions) {
-    this.config = defaultsDeep(options, Cli.defaults) as CliOptions & CliDefaults;
-    this.logger = pino() as Logger;
+    this.config = defaultsDeep(options, Cli.defaults) as CliConfig;
+    this.context = new Context();
+    this.logger =
+      options?.logger ??
+      (pino(
+        { prettyPrint: this.context.env === "development" && { suppressFlushSyncWarning: true } },
+        destination({ sync: true }),
+      ) as Logger);
+
     this.exiting = false;
   }
 
@@ -64,6 +75,7 @@ export class Cli {
     // Graceful exit on POSIX signals.
     this.config.exit.signals.forEach((signal) =>
       process.once(signal, () => {
+        this.logger.trace("process received signal: %s", signal);
         const code = 128 + constants.signals[signal];
         void this.exit(code, signal);
       }),
@@ -72,6 +84,7 @@ export class Cli {
     // Graceful exit on Windows and PM2 "shutdown_with_message".
     process.on("message", (message) => {
       if (message === "shutdown") {
+        this.logger.trace("process received shutdown message");
         void this.exit();
       }
     });
@@ -96,39 +109,51 @@ export class Cli {
     process.once("exit", (code) => {
       pino
         .final(this.logger as Pino.Logger)
-        .trace("exit (code: %d, graceful: %s)", code, this.exiting);
+        .trace("process exit (code: %d, graceful: %s)", code, this.exiting);
     });
 
     // Parse command `name` and `options` from argv.
     const [, , ...args] = argv;
-    const { _, ...options } = minimist(args);
+    const { _, ...options } = minimist<CliArgs>(args, { boolean: "debug" });
     const [name] = _;
 
-    // Find command by name.
-    const CommandClass = this.config.commands.get(name);
-    if (CommandClass) {
-      this.command = new CommandClass(options);
+    this.logger.level =
+      this.context.env === "development"
+        ? options.debug
+          ? "trace"
+          : "debug"
+        : options.debug
+        ? "debug"
+        : "info";
+
+    if (name) {
+      const commandClass = this.config.commands.get(name);
+      if (commandClass) {
+        this.command = new commandClass(this.context, this.logger);
+      }
     }
 
-    await this.command?.run();
+    await this.command?.run(options);
   }
 
-  private async exit(code = 0, signal: Nullable<NodeJS.Signals> = null) {
+  private async exit(code = 0, signal: Nullable<Signal> = null) {
     if (this.exiting) {
       return;
     }
     this.exiting = true;
+
     try {
       // Attempt to exit gracefully if the command defines an exit function.
-      const exit = this.command?.exit?.(code, signal);
+      const exit = this.command?.exit(code, signal);
       if (exit instanceof Promise) {
         await ptimeout(exit, this.config.exit.timeout);
       }
-      process.nextTick(process.exit.bind(process, code));
+      // eslint-disable-next-line unicorn/no-process-exit
+      process.exit(code);
     } catch (error) {
       // Graceful exit failed with error.
-      this.logger.error(error);
-      process.nextTick(process.kill.bind(process, process.pid, "SIGKILL"));
+      pino.final(this.logger as Pino.Logger).error(error);
+      process.kill(process.pid, "SIGKILL");
     }
   }
 }
