@@ -1,5 +1,4 @@
 import "reflect-metadata";
-import type { CommandClass } from "./command";
 import { Cli } from "./cli";
 
 export * from "./cli";

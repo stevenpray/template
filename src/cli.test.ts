@@ -1,6 +1,7 @@
 import { Cli } from "./cli";
-import { Command, CommandClass } from "./command";
-import { Nullable } from "./types";
+import type { CommandClass } from "./command";
+import { Command } from "./command";
+import type { Nullable } from "./types";
 
 describe("Cli", () => {
   it("should be exported class", () => {
@@ -18,11 +19,13 @@ describe("Cli", () => {
 
   it("should run command by name", async () => {
     expect.assertions(2);
+
     class TestCommand extends Command {
       run() {
         return undefined;
       }
     }
+
     const commands = new Map<Nullable<string>, CommandClass>([["test", TestCommand]]);
     const cli = new Cli({ commands });
     const promise = cli.run(["", "", "test"]);

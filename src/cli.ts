@@ -13,8 +13,8 @@ import type { Nullable } from "./types";
 type Signal = NodeJS.Signals;
 
 export interface CliArgs {
-  [name: string]: any;
   debug: boolean;
+  [name: string]: any;
 }
 
 interface CliDefaults {
