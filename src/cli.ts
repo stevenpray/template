@@ -6,7 +6,7 @@ import type Pino from "pino";
 import pino from "pino";
 import type { Class, SetOptional } from "type-fest";
 import type { Logger } from "./logger";
-import type { Maybe, MaybePromise } from "./types";
+import type { Nullable, MaybePromise } from "./types";
 
 export interface CliCommandOptions {
   [name: string]: CliCommandOptions | boolean | number | string;
@@ -20,7 +20,7 @@ export interface CliCommand {
 export type CliCommandClass = Class<CliCommand, [CliCommandOptions | undefined]>;
 
 interface CliDefaults {
-  commands: ReadonlyMap<Maybe<string>, CliCommandClass>;
+  commands: ReadonlyMap<Nullable<string>, CliCommandClass>;
   exit: {
     signals: NodeJS.Signals[];
     timeout: number;
@@ -31,7 +31,7 @@ export type CliOptions = SetOptional<CliDefaults>;
 
 export class Cli {
   private static readonly defaults: Readonly<CliDefaults> = {
-    commands: new Map<Maybe<string>, CliCommandClass>(),
+    commands: new Map<Nullable<string>, CliCommandClass>(),
     exit: {
       signals: ["SIGBREAK", "SIGHUP", "SIGINT", "SIGTERM", "SIGUSR2"],
       timeout: 10000,
@@ -113,7 +113,7 @@ export class Cli {
     await this.command?.run();
   }
 
-  private async exit(code = 0, signal: Maybe<NodeJS.Signals> = null) {
+  private async exit(code = 0, signal: Nullable<NodeJS.Signals> = null) {
     if (this.exiting) {
       return;
     }
