@@ -188,6 +188,7 @@
     "babel/valid-typeof": [2, { "requireStringLiterals": true }],
     "import/extensions": [2, { "json": "always" }],
     "import/first": 1,
+    "import/named": 1,
     "import/newline-after-import": 1,
     "import/no-absolute-path": 2,
     "import/no-amd": 2,
@@ -292,9 +293,7 @@
     "unicorn/prevent-abbreviations": 0 // @override unicorn/recommended
   },
   "settings": {
-    "import/resolver": {
-      "node": { "extensions": [".js", ".json", ".jsx"] }
-    },
+    "import/extensions": [".js", ".json"],
     "jsdoc": {
       "mode": "permissive"
     }
@@ -390,10 +389,7 @@
         "@typescript-eslint/unbound-method": 0
       },
       "settings": {
-        "import/resolver": {
-          "node": { "extensions": [".js", ".json", ".jsx", ".ts", ".tsx"] },
-          "typescript": { "project": "." }
-        }
+        "import/extensions": [".js", ".json", ".jsx", ".ts", ".tsx"]
       }
     },
     {
@@ -407,8 +403,11 @@
       "files": ["src/**/*"],
       "parserOptions": {
         "ecmaVersion": 2020,
-        "ecmaFeatures": { "jsx": true },
+        "ecmaFeatures": { "impliedStrict": true, "jsx": true },
         "sourceType": "module"
+      },
+      "settings": {
+        "import/extensions": [".js", ".json", ".jsx"]
       },
       "rules": {
         "no-console": 1,
@@ -420,6 +419,13 @@
         "node/no-sync": 2,
         "node/no-unsupported-features/es-builtins": 0, // @override node/recommended: @see @babel/preset-env
         "node/no-unsupported-features/es-syntax": 0 // @override node/recommended: @see @babel/preset-env
+      }
+    },
+    {
+      "files": ["**/*.test.ts"],
+      "rules": {
+        "prefer-destructuring": 0,
+        "@typescript-eslint/dot-notation": 0
       }
     }
   ]
