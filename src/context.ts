@@ -15,9 +15,10 @@ export class Context {
   readonly pkg: Pkg;
 
   constructor() {
-    // eslint-disable-next-line node/no-process-env
-    this.env = process.env.NODE_ENV ?? "development";
+    // eslint-disable-next-line node/no-process-env,@typescript-eslint/prefer-nullish-coalescing
+    this.env = process.env.NODE_ENV || "development";
     this.pkg = pkg;
-    this.dir = paths(this.pkg.name, { suffix: "" });
+    // eslint-disable-next-line node/no-process-env
+    this.dir = { ...paths(this.pkg.name, { suffix: "" }), run: process.env.XDG_RUNTIME_DIR };
   }
 }
