@@ -24,7 +24,7 @@ module.exports = {
       `babel --quiet --env-name=${env} --extensions=".js,.ts" --ignore "**/*.test.ts" --source-maps --out-dir="${dir.lib}" "${dir.src}"`,
     ),
     lint: `eslint "${dir.bin}/**" "${dir.src}/**" *.js *.md`,
-    test: "NODE_ENV=test jest --coverage",
+    test: utils.crossEnv("NODE_ENV=test jest --coverage"),
 
     npm: {
       prepack: utils.series.nps("clean", "build"),
