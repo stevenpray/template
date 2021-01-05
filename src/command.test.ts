@@ -32,6 +32,7 @@ describe("Command", () => {
         return undefined;
       }
     }
+
     const command = new FooCommand(mock<Context>(), mock<Logger>());
     command.run();
     expect(await command.exit(0, null)).toBeUndefined();
