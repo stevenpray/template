@@ -8,7 +8,7 @@ require("./env.js");
  * @type {import("type-fest").PackageJson}
  */
 const pkg = root.require("package.json");
-const dir = { bin: "bin", src: "src", ...pkg.directories };
+const dir = { src: "src", ...pkg.directories };
 const env = process.env.NODE_ENV || "development";
 
 // const copy = (src) => utils.copy(`"${src}" "../${dir.lib}" --cwd "${dir.src}" --parents`);
@@ -23,7 +23,7 @@ module.exports = {
       "tsc --project tsconfig.types.json",
       `babel --quiet --env-name=${env} --extensions=".js,.ts" --ignore "**/*.test.ts" --source-maps --out-dir="${dir.lib}" "${dir.src}"`,
     ),
-    lint: `eslint "${dir.bin}/**" "${dir.src}/**" *.js *.md`,
+    lint: `eslint .`,
     test: utils.crossEnv("NODE_ENV=test jest --coverage"),
 
     npm: {
