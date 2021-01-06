@@ -18,6 +18,7 @@ module.exports = {
     logLevel: "warn",
   },
   scripts: {
+    start: "nodemon bin --debug",
     clean: utils.rimraf(dir.lib),
     build: utils.series(
       "tsc --project tsconfig.types.json",
@@ -29,7 +30,7 @@ module.exports = {
     npm: {
       prepack: utils.series.nps("clean", "build"),
       postpack: utils.series.nps("clean"),
-      start: "nodemon bin",
+      start: utils.series.nps("clean", "start"),
       test: utils.series.nps("lint", "test"),
     },
   },

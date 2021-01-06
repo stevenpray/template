@@ -8,20 +8,25 @@
     "node": true
   },
   "parserOptions": {
-    "ecmaVersion": 2020,
+    "ecmaVersion": 2019,
+    "ecmaFeatures": { "impliedStrict": false },
     "sourceType": "script"
   },
   "plugins": [
     "@typescript-eslint",
     "babel",
+    "html",
     "import",
     "jest",
     "jsdoc",
     "json",
-    "markdown",
+    "jsx-a11y",
     "node",
     "prettier",
     "promise",
+    "react",
+    "react-hooks",
+    "sonarjs",
     "unicorn"
   ],
   "extends": [
@@ -34,6 +39,7 @@
     "plugin:json/recommended",
     "plugin:node/recommended",
     "plugin:promise/recommended",
+    "plugin:sonarjs/recommended",
     "plugin:unicorn/recommended",
     "plugin:prettier/recommended",
     "prettier/babel"
@@ -300,10 +306,43 @@
   },
   "overrides": [
     {
-      "files": ["*.md"],
+      "files": ["src/**/*"],
       "parserOptions": {
-        "ecmaFeatures": { "impliedStrict": true },
+        "ecmaVersion": 2020,
+        "ecmaFeatures": { "impliedStrict": true, "jsx": true },
+        "sourceType": "module"
+      },
+      "settings": {
+        "import/extensions": [".js", ".json", ".jsx"]
+      },
+      "rules": {
+        "no-console": 1,
+        "import/no-commonjs": 2,
+        "import/no-default-export": 2,
+        "node/global-require": 2,
+        "node/no-process-env": 2,
+        "node/no-sync": 2,
+        "node/no-unsupported-features/es-builtins": 0, // @override node/recommended: @see @babel/preset-env
+        "node/no-unsupported-features/es-syntax": 0 // @override node/recommended: @see @babel/preset-env
+      }
+    },
+    {
+      "files": ["*.html"],
+      "env": {
+        "browser": true,
+        "commonjs": false,
+        "es6": false,
+        "jest": false,
+        "node": false
+      },
+      "parserOptions": {
+        "ecmaFeatures": { "impliedStrict": false },
+        "ecmaVersion": 5,
         "sourceType": "script"
+      },
+      "rules": {
+        "no-console": 2,
+        "no-var": 0
       }
     },
     {
@@ -400,32 +439,105 @@
       }
     },
     {
-      "files": ["src/**/*"],
-      "parserOptions": {
-        "ecmaVersion": 2020,
-        "ecmaFeatures": { "impliedStrict": true, "jsx": true },
-        "sourceType": "module"
-      },
-      "settings": {
-        "import/extensions": [".js", ".json", ".jsx"]
-      },
-      "rules": {
-        "no-console": 1,
-        "strict": [2, "never"],
-        "import/no-commonjs": 2,
-        "import/no-default-export": 2,
-        "node/global-require": 2,
-        "node/no-process-env": 2,
-        "node/no-sync": 2,
-        "node/no-unsupported-features/es-builtins": 0, // @override node/recommended: @see @babel/preset-env
-        "node/no-unsupported-features/es-syntax": 0 // @override node/recommended: @see @babel/preset-env
-      }
-    },
-    {
       "files": ["**/*.test.ts"],
       "rules": {
         "prefer-destructuring": 0,
         "@typescript-eslint/dot-notation": 0
+      }
+    },
+    {
+      "files": ["*.jsx", "*.tsx"],
+      "ecmaFeatures": { "jsx": true },
+      "env": {
+        "browser": true,
+        "shared-node-browser": true
+      },
+      "extends": [
+        "plugin:jsx-a11y/recommended",
+        "plugin:react-hooks/recommended",
+        "plugin:react/recommended"
+      ],
+      "rules": {
+        // NODEJS boolean-prop-naming?
+        //    'react/boolean-prop-naming': [0, {
+        //      propTypeNames: ['bool', 'mutuallyExclusiveTrueProps'],
+        //      rule: '^(is|has)[A-Z]([A-Za-z0-9]?)+',
+        //      message: '',
+        //    }],
+        "react/button-has-type": 2,
+        "react/function-component-definition": [
+          1,
+          { "namedComponents": "arrow-function", "unnamedComponents": "arrow-function" }
+        ],
+        "react/jsx-boolean-value": 1,
+        "react/jsx-closing-bracket-location": 1,
+        "react/jsx-closing-tag-location": 1,
+        "react/jsx-curly-brace-presence": 1,
+        "react/jsx-curly-newline": 1,
+        "react/jsx-curly-spacing": [1, { "when": "never" }],
+        "react/jsx-filename-extension": [2, { "extensions": [".jsx", ".tsx"] }],
+        "react/jsx-fragments": 1,
+        "react/jsx-handler-names": [
+          1,
+          {
+            "eventHandlerPrefix": "handle",
+            "eventHandlerPropPrefix": "on"
+          }
+        ],
+        "react/jsx-indent-props": [1, 2],
+        "react/jsx-no-bind": [2, { "allowArrowFunctions": true }],
+        "react/jsx-no-script-url": 2,
+        "react/jsx-no-useless-fragment": 1,
+        "react/jsx-pascal-case": 1,
+        "react/jsx-props-no-multi-spaces": 1,
+        "react/jsx-tag-spacing": 1,
+        "react/jsx-wrap-multilines": 1,
+        "react/no-access-state-in-setstate": 2,
+        "react/no-array-index-key": 2,
+        "react/no-danger": 1,
+        "react/no-did-mount-set-state": 0, // This is necessary for server-rendering.
+        "react/no-did-update-set-state": 2,
+        "react/no-multi-comp": 1,
+        "react/no-redundant-should-component-update": 2,
+        "react/no-string-refs": [2, { "noTemplateLiterals": true }], // @override react/recommended noTemplateLiterals
+        "react/no-this-in-sfc": 2,
+        "react/no-typos": 2,
+        "react/no-unsafe": 2,
+        "react/no-unused-state": 1,
+        "react/no-will-update-set-state": 2,
+        "react/prefer-es6-class": 1,
+        "react/prefer-read-only-props": 2,
+        "react/prefer-stateless-function": 1,
+        "react/prop-types": 0, // @override react/recommended
+        "react/self-closing-comp": 1,
+        "react/sort-comp": [
+          1,
+          {
+            "order": [
+              "static-variables",
+              "static-methods",
+              "instance-variables",
+              "lifecycle",
+              "/^on.+$/",
+              "getters",
+              "setters",
+              "/^(get|set)(?!(InitialState$|DefaultProps$|ChildContext$)).+$/",
+              "instance-methods",
+              "everything-else",
+              "rendering"
+            ],
+            "groups": { "rendering": ["/^render.+$/", "render"] }
+          }
+        ],
+        "react/state-in-constructor": [1, "never"],
+        "react/static-property-placement": 1,
+        "react/style-prop-object": 2,
+        "react/void-dom-elements-no-children": 2
+      },
+      "settings": {
+        "react": {
+          "version": "17"
+        }
       }
     }
   ]
