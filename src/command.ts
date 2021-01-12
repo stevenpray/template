@@ -1,3 +1,5 @@
+import type { ChildProcess } from "child_process";
+import execa from "execa";
 import type { CliArgs } from "./cli";
 import type { Context } from "./context";
 import type { Logger } from "./logger";
@@ -26,5 +28,14 @@ export abstract class Command {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   exit(code: number, signal: Signal | null): MaybePromise<void> {
     return undefined;
+  }
+
+  protected spawn(command: string, options?: execa.Options) {
+    const child: ChildProcess = execa.command(command, options);
+    child.on("error", (error) => this.logger.error(error));
+    child.on("exit", (code, signal) =>
+      this.logger.debug("child (pid: %d) exited (code: %d, signal: %s)", child.pid, code, signal),
+    );
+    return child;
   }
 }

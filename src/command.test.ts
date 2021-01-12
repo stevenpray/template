@@ -37,4 +37,17 @@ describe("Command", () => {
     command.run();
     expect(await command.exit(0, null)).toBeUndefined();
   });
+
+  it("should define protected spawn method", () => {
+    expect.assertions(1);
+
+    class FooCommand extends Command {
+      run() {
+        return undefined;
+      }
+    }
+
+    const command = new FooCommand(mock<Context>(), mock<Logger>());
+    expect(command["spawn"]("node -v", { stdout: "ignore" }).pid).toBeNumber();
+  });
 });

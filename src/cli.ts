@@ -74,7 +74,7 @@ export class Cli {
 
     // Graceful exit on POSIX signals.
     this.config.exit.signals.forEach((signal) =>
-      process.once(signal, () => {
+      process.on(signal, () => {
         this.logger.trace("process received signal: %s", signal);
         const code = 128 + constants.signals[signal];
         void this.exit(code, signal);
@@ -146,7 +146,7 @@ export class Cli {
       // Attempt to exit gracefully if the command defines an exit function.
       const exit = this.command?.exit(code, signal);
       if (exit instanceof Promise) {
-        await ptimeout(exit, this.config.exit.timeout);
+        await ptimeout(exit, this.config.exit.timeout, "command exit handler timed-out");
       }
       // eslint-disable-next-line unicorn/no-process-exit
       process.exit(code);
