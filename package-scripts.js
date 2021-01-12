@@ -1,13 +1,13 @@
 "use strict";
 
 const utils = require("nps-utils");
-const root = require("app-root-path");
 require("./env.js");
 
 /**
  * @type {import("type-fest").PackageJson}
  */
-const pkg = root.require("package.json");
+const pkg = require("./package.json");
+
 const dir = { src: "src", ...pkg.directories };
 const env = process.env.NODE_ENV || "development";
 
