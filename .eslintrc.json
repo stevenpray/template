@@ -15,6 +15,7 @@
   "plugins": [
     "@typescript-eslint",
     "babel",
+    "compat",
     "html",
     "import",
     "jest",
@@ -36,7 +37,6 @@
     "plugin:jest/recommended",
     "plugin:jest/style",
     "plugin:jsdoc/recommended",
-    "plugin:json/recommended",
     "plugin:node/recommended",
     "plugin:promise/recommended",
     "plugin:sonarjs/recommended",
@@ -327,6 +327,32 @@
       }
     },
     {
+      "files": ["*.json", "*.json5"],
+      "extends": ["plugin:json/recommended"],
+      "rules": {
+        "import/unambiguous": 0,
+        "json/*": [2, { "allowComments": true }]
+      }
+    },
+
+    {
+      "files": ["*.html"],
+      "env": {
+        "browser": true,
+        "commonjs": false,
+        "es6": false,
+        "jest": false,
+        "node": false
+      },
+      "parserOptions": {
+        "ecmaFeatures": { "impliedStrict": false },
+        "ecmaVersion": 2015,
+        "sourceType": "script"
+      },
+      "extends": ["plugin:compat/recommended"]
+    },
+
+    {
       "files": ["*.html"],
       "env": {
         "browser": true,
@@ -339,10 +365,6 @@
         "ecmaFeatures": { "impliedStrict": false },
         "ecmaVersion": 5,
         "sourceType": "script"
-      },
-      "rules": {
-        "no-console": 2,
-        "no-var": 0
       }
     },
     {
