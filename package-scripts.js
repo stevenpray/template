@@ -11,18 +11,16 @@ const pkg = root.require("package.json");
 const dir = { src: "src", ...pkg.directories };
 const env = process.env.NODE_ENV || "development";
 
-// const copy = (src) => utils.copy(`"${src}" "../${dir.lib}" --cwd "${dir.src}" --parents`);
-
 module.exports = {
   options: {
     logLevel: "warn",
   },
   scripts: {
-    start: "nodemon bin --debug",
     clean: utils.rimraf(dir.lib),
+    start: "nodemon --no-warnings bin --debug",
     build: utils.series(
       "tsc --project tsconfig.types.json",
-      `babel --quiet --env-name=${env} --extensions=".js,.ts" --ignore "**/*.test.ts" --source-maps --out-dir="${dir.lib}" "${dir.src}"`,
+      `babel --quiet --env-name=${env} --extensions=".js,.ts" --ignore="**/*.test.ts" --source-maps --out-dir="${dir.lib}" "${dir.src}"`,
     ),
     lint: `eslint .`,
     test: utils.crossEnv("NODE_ENV=test jest --coverage"),

@@ -1,8 +1,7 @@
 "use strict";
 
 /**
- * @param {import("@babel/core").ConfigAPI} api
- * @return {import("@babel/core").TransformOptions}
+ * @type {import("@babel/core").ConfigFunction}
  */
 module.exports = ({ env }) => {
   return {
