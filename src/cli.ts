@@ -129,7 +129,7 @@ export class Cli {
     if (name) {
       const commandClass = this.config.commands.get(name);
       if (commandClass) {
-        this.command = new commandClass(this.context, this.logger);
+        this.command = new commandClass(this.context, this.logger.child({ name }));
       }
     }
 
@@ -146,7 +146,7 @@ export class Cli {
       // Attempt to exit gracefully if the command defines an exit function.
       const exit = this.command?.exit(code, signal);
       if (exit instanceof Promise) {
-        await ptimeout(exit, this.config.exit.timeout, "command exit handler timed-out");
+        await ptimeout(exit, this.config.exit.timeout, "graceful exit timed-out");
       }
       // eslint-disable-next-line unicorn/no-process-exit
       process.exit(code);
