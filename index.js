@@ -1,18 +1,21 @@
 "use strict";
 
+const path = require("path");
 const fs = require("fs-extra");
-const root = require("app-root-path");
 require("./env");
 
 /**
  * @type {import("./src")}
  */
 const lib = (() => {
-  if (fs.pathExistsSync(root.resolve("lib"))) {
-    return root.require("lib");
+  const index = path.resolve(__dirname, "lib", "index.js");
+  if (fs.pathExistsSync(index)) {
+    // eslint-disable-next-line import/no-dynamic-require
+    return require(index);
   }
   require("@babel/register")({ extensions: [".js", ".ts"] });
-  return root.require("src");
+  // eslint-disable-next-line import/no-unresolved
+  return require("./src");
 })();
 
 module.exports = lib;
