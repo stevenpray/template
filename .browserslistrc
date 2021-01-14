@@ -1,6 +1,8 @@
+[client]
 > 1%
 IE 11
 last 2 versions
 not dead
 
+[server]
 node 12.4
