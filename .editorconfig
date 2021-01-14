@@ -12,7 +12,7 @@ trim_trailing_whitespace = true
 [*.cmd]
 end_of_line = crlf
 
-[*.md]
+[{*.md,*.mdx}]
 trim_trailing_whitespace = false
 
 [{*.mk,Makefile}]
