@@ -2,11 +2,11 @@
 *.log
 *.tgz
 *.tsbuildinfo
+/config.json*
 /coverage/
 /lib/
 /package/
 /var/
-config.json*
 docker-compose.override.yml
 http-client.private.env.json
 node_modules/
