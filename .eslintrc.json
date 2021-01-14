@@ -164,16 +164,7 @@
     "operator-assignment": 1,
     "prefer-arrow-callback": [1, { "allowNamedFunctions": false, "allowUnboundThis": true }],
     "prefer-const": [1, { "destructuring": "any", "ignoreReadBeforeAssign": true }],
-    "prefer-destructuring": [
-      1,
-      {
-        "VariableDeclarator": { "array": false, "object": true },
-        "AssignmentExpression": { "array": true, "object": false }
-      },
-      {
-        "enforceForRenamedProperties": false
-      }
-    ],
+    "prefer-destructuring": 0,
     "prefer-numeric-literals": 1,
     "prefer-object-spread": 1,
     "prefer-promise-reject-errors": 2,
@@ -194,6 +185,7 @@
     "babel/no-invalid-this": 2,
     "babel/no-unused-expressions": 1,
     "babel/valid-typeof": [2, { "requireStringLiterals": true }],
+
     "import/extensions": [2, { "json": "always" }],
     "import/first": 1,
     "import/named": 1,
@@ -218,6 +210,7 @@
     "import/order": 1,
     "import/prefer-default-export": 0,
     "import/unambiguous": 2,
+
     "jest/consistent-test-it": 1,
     "jest/lowercase-name": [1, { "ignore": ["describe", "test"] }],
     "jest/no-deprecated-functions": 1,
@@ -230,6 +223,7 @@
     "jest/prefer-spy-on": 1,
     "jest/prefer-strict-equal": 1,
     "jest/prefer-todo": 1,
+
     "jsdoc/check-examples": 1,
     "jsdoc/check-indentation": 1,
     "jsdoc/check-syntax": 1,
@@ -262,8 +256,11 @@
     "node/prefer-global/text-encoder": 1,
     "node/prefer-promises/dns": 1,
     "node/prefer-promises/fs": 1,
+
     "promise/no-return-in-finally": 2, // @override promise/recommended severity
+
     "prettier/prettier": 1, // @override prettier/recommended severity
+
     "unicorn/better-regex": 1, // @override unicorn/recommended severity
     "unicorn/catch-error-name": 1, // @override unicorn/recommended severity
     "unicorn/consistent-function-scoping": 1, // @override unicorn/recommended severity
@@ -319,6 +316,7 @@
       },
       "rules": {
         "no-console": 1,
+
         "import/no-commonjs": 2,
         "import/no-default-export": 2,
         "node/global-require": 2,
@@ -333,10 +331,10 @@
       "extends": ["plugin:json/recommended"],
       "rules": {
         "import/unambiguous": 0,
+
         "json/*": [2, { "allowComments": true }]
       }
     },
-
     {
       "files": ["*.html"],
       "env": {
@@ -393,15 +391,20 @@
         "no-use-before-define": 0, // @see @typescript-eslint/no-use-before-define
         "no-useless-constructor": 0, // @see @typescript-eslint/no-useless-constructor
         "require-await": 0, // @see @typescript-eslint/require-await
+
         "babel/camelcase": 0, // @see @typescript-eslint/naming-convention
         "babel/new-cap": 0, // @see @typescript-eslint/naming-convention
         "babel/no-invalid-this": 0, // @see @typescript-eslint/no-invalid-this
         "babel/no-unused-expressions": 0, // @see @typescript-eslint/no-unused-expressions
+
         "jsdoc/require-jsdoc": 0, // @override jsdoc/recommended
+
         "node/no-missing-import": 0, // @override node/recommended: @see import/no-unresolved
         "node/no-unsupported-features/es-builtins": 0, // @override node/recommended: @see @babel/preset-env
         "node/no-unsupported-features/es-syntax": 0, // @override node/recommended: @see @babel/preset-env
+
         "promise/valid-params": 0, // @override promise/recommended
+
         "@typescript-eslint/array-type": [1, { "default": "array-simple" }],
         "@typescript-eslint/ban-ts-comment": [2, { "ts-expect-error": "allow-with-description" }], // @override @typescript-eslint/recommended
         "@typescript-eslint/consistent-type-definitions": [1, "interface"],
@@ -465,7 +468,6 @@
     {
       "files": ["**/*.test.ts"],
       "rules": {
-        "prefer-destructuring": 0,
         "@typescript-eslint/dot-notation": 0
       }
     },
@@ -482,12 +484,8 @@
         "plugin:react/recommended"
       ],
       "rules": {
-        // NODEJS boolean-prop-naming?
-        //    'react/boolean-prop-naming': [0, {
-        //      propTypeNames: ['bool', 'mutuallyExclusiveTrueProps'],
-        //      rule: '^(is|has)[A-Z]([A-Za-z0-9]?)+',
-        //      message: '',
-        //    }],
+        "import/no-default-export": 0,
+
         "react/button-has-type": 2,
         "react/function-component-definition": [
           1,
@@ -556,7 +554,9 @@
         "react/state-in-constructor": [1, "never"],
         "react/static-property-placement": 1,
         "react/style-prop-object": 2,
-        "react/void-dom-elements-no-children": 2
+        "react/void-dom-elements-no-children": 2,
+
+        "unicorn/no-nested-ternary": 0
       },
       "settings": {
         "react": {
