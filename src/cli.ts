@@ -9,8 +9,6 @@ import type { Command, CommandClass } from "./command";
 import type { Logger } from "./logger";
 import type { Nullable } from "./types";
 
-type Signal = NodeJS.Signals;
-
 export interface CliArgs {
   debug: boolean;
   [name: string]: any;

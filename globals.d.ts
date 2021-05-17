@@ -1,3 +1,5 @@
+declare type Signal = NodeJS.Signals;
+
 declare namespace NodeJS {
   interface ProcessEnv {
     DEBUG?: string;

@@ -5,8 +5,6 @@ import type { Context } from "./context";
 import type { Logger } from "./logger";
 import type { MaybePromise } from "./types";
 
-type Signal = NodeJS.Signals;
-
 export type CommandOptions = CliArgs;
 
 export interface CommandClass {
