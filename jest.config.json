@@ -1,6 +1,6 @@
 {
   "collectCoverageFrom": ["src/**/*.ts", "!**/index.ts", "!**/*.d.ts"],
   "coverageReporters": ["clover"],
-  "setupFilesAfterEnv": ["<rootDir>/jest.setup.ts"],
+  "setupFilesAfterEnv": ["<rootDir>/jest.setup.js"],
   "testEnvironment": "node"
 }

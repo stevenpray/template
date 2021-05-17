@@ -1,14 +1,14 @@
 "use strict";
 
+const path = require("path");
 const utils = require("nps-utils");
-require("./env");
-
-/**
- * @type {import("type-fest").PackageJson}
- */
 const pkg = require("./package.json");
 
-const dir = { src: "src", ...pkg.directories };
+const dir = {
+  out: path.resolve(__dirname, pkg.directories.lib),
+  src: path.resolve(__dirname, pkg.directories.src),
+};
+
 const env = process.env.NODE_ENV || "development";
 
 module.exports = {
@@ -16,11 +16,11 @@ module.exports = {
     logLevel: "warn",
   },
   scripts: {
-    clean: utils.rimraf(dir.lib),
+    clean: utils.rimraf(dir.out),
     start: "nodemon --no-warnings bin --debug",
     build: utils.series(
       "tsc --project tsconfig.types.json",
-      `babel --quiet --env-name=${env} --extensions=".js,.ts" --ignore="**/*.test.ts" --source-maps --out-dir="${dir.lib}" "${dir.src}"`,
+      `babel --quiet --env-name=${env} --extensions=".js,.ts" --ignore="**/*.test.ts" --source-maps --out-dir="${dir.out}" "${dir.src}"`,
     ),
     lint: `eslint .`,
     test: utils.crossEnv("NODE_ENV=test jest --coverage"),

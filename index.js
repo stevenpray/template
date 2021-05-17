@@ -1,21 +1,11 @@
 "use strict";
 
-const path = require("path");
-const fs = require("fs-extra");
-require("./env");
+const dotenv = require("dotenv-defaults");
+const expand = require("dotenv-expand");
 
-/**
- * @type {import("./src")}
- */
-const lib = (() => {
-  const index = path.resolve(__dirname, "lib", "index.js");
-  if (fs.pathExistsSync(index)) {
-    // eslint-disable-next-line import/no-dynamic-require
-    return require(index);
-  }
-  require("@babel/register")({ extensions: [".js", ".ts"] });
-  // eslint-disable-next-line import/no-unresolved
-  return require("./src");
-})();
+expand(dotenv.config());
 
-module.exports = lib;
+require("@babel/register")({ extensions: [".js", ".ts"] });
+
+// eslint-disable-next-line import/no-unresolved
+module.exports = require("./src");

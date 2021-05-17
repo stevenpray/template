@@ -1,4 +1,5 @@
 {
+  "private": true,
   "name": "@stevenpray/template-nodejs",
   "version": "1.0.0",
   "description": "Node.js project template",
@@ -6,13 +7,14 @@
   "author": "Steven Pray <steven@stevenpray.com>",
   "repository": "github:stevenpray/template-nodejs",
   "directories": {
-    "lib": "lib"
+    "lib": "lib",
+    "src": "src"
   },
   "files": [
     "bin",
     "lib"
   ],
-  "main": "lib/index.js",
+  "main": "lib",
   "bin": "bin/index.js",
   "engines": {
     "node": ">=12.10"
@@ -27,8 +29,6 @@
     "@babel/runtime-corejs3": "7.14.0",
     "app-root-path": "3.0.0",
     "core-js": "3.12.1",
-    "dotenv-defaults": "2.0.1",
-    "dotenv-expand": "5.1.0",
     "env-paths": "2.2.1",
     "execa": "5.0.0",
     "fs-extra": "10.0.0",
@@ -74,6 +74,8 @@
     "babel-jest": "26.6.3",
     "babel-plugin-transform-typescript-metadata": "0.3.2",
     "cz-conventional-changelog": "3.3.0",
+    "dotenv-defaults": "2.0.1",
+    "dotenv-expand": "5.1.0",
     "eslint": "7.26.0",
     "eslint-config-prettier": "8.3.0",
     "eslint-import-resolver-typescript": "2.4.0",
