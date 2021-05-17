@@ -23,11 +23,15 @@
     "jsdoc",
     "json",
     "jsx-a11y",
+    "lodash",
+    "markdown",
+    "no-secrets",
     "node",
     "prettier",
     "promise",
     "react",
     "react-hooks",
+    "simple-import-sort",
     "sonarjs",
     "unicorn"
   ],
@@ -39,6 +43,7 @@
     "plugin:jest/recommended",
     "plugin:jest/style",
     "plugin:jsdoc/recommended",
+    "plugin:lodash/recommended",
     "plugin:node/recommended",
     "plugin:promise/recommended",
     "plugin:sonarjs/recommended",
@@ -174,7 +179,7 @@
     "radix": 1,
     "require-atomic-updates": 2,
     "require-await": 2,
-    "sort-imports": 0, // @see import/order
+    "sort-imports": 0, // @see simple-import-sort/imports
     "strict": [2, "global"],
     "symbol-description": 2,
     "valid-typeof": 0, // @override eslint:recommended: @see babel/valid-typeof
@@ -207,7 +212,7 @@
     "import/no-unused-modules": 1,
     "import/no-useless-path-segments": 1,
     "import/no-webpack-loader-syntax": 2,
-    "import/order": 1,
+    "import/order": 0, // @see simple-import-sort/imports
     "import/prefer-default-export": 0,
     "import/unambiguous": 2,
 
@@ -233,6 +238,11 @@
     "jsdoc/require-hyphen-before-param-description": 1,
     "jsdoc/require-param-description": 0, // @override jsdoc/recommended
     "jsdoc/require-returns-description": 0, // @override jsdoc/recommended
+
+    "lodash/import-scope": 0, // TODO.
+    "lodash/prefer-lodash-method": 0, // @override lodash/recommended
+
+    "no-secrets/no-secrets": [2, { "tolerance": 4 }],
 
     "node/callback-return": 2,
     "node/exports-style": [1, "module.exports"],
@@ -261,6 +271,22 @@
     "promise/no-return-in-finally": 2, // @override promise/recommended severity
 
     "prettier/prettier": 1, // @override prettier/recommended severity
+
+    "simple-import-sort/exports": 1,
+    "simple-import-sort/imports": [
+      1,
+      {
+        "groups": [
+          [
+            "^\u0000", // all side-effects (0 at start)
+            "^[^/\\.]", // local
+            "^\\.", // local
+            "^[^/\\.].*\u0000$", // types (0 at end)
+            "^\\..*\u0000$" // local types (0 at end)
+          ]
+        ]
+      }
+    ],
 
     "unicorn/better-regex": 1, // @override unicorn/recommended severity
     "unicorn/catch-error-name": 1, // @override unicorn/recommended severity
@@ -322,6 +348,7 @@
 
         "import/no-commonjs": 2,
         "import/no-default-export": 2,
+
         "node/global-require": 2,
         "node/no-process-env": 2,
         "node/no-sync": 2,
@@ -330,7 +357,7 @@
       }
     },
     {
-      "files": ["*.json", "*.json5"],
+      "files": ["**/*.json", "**/*.json5"],
       "extends": ["plugin:json/recommended"],
       "rules": {
         "import/unambiguous": 0,
@@ -339,7 +366,7 @@
       }
     },
     {
-      "files": ["*.html"],
+      "files": ["**/*.html"],
       "env": {
         "browser": true,
         "commonjs": false,
@@ -354,24 +381,8 @@
       },
       "extends": ["plugin:compat/recommended"]
     },
-
     {
-      "files": ["*.html"],
-      "env": {
-        "browser": true,
-        "commonjs": false,
-        "es6": false,
-        "jest": false,
-        "node": false
-      },
-      "parserOptions": {
-        "ecmaFeatures": { "impliedStrict": false },
-        "ecmaVersion": 5,
-        "sourceType": "script"
-      }
-    },
-    {
-      "files": ["*.ts", "*.tsx"],
+      "files": ["**/*.ts", "**/*.tsx"],
       "parser": "@typescript-eslint/parser",
       "parserOptions": {
         "createDefaultProgram": true,
@@ -461,7 +472,7 @@
       }
     },
     {
-      "files": ["*.d.ts"],
+      "files": ["**/*.d.ts"],
       "rules": {
         "import/no-default-export": 0,
         "import/unambiguous": 0
@@ -474,7 +485,7 @@
       }
     },
     {
-      "files": ["*.jsx", "*.tsx"],
+      "files": ["**/*.jsx", "**/*.tsx"],
       "ecmaFeatures": { "jsx": true },
       "env": {
         "browser": true,
@@ -564,6 +575,21 @@
         "react": {
           "version": "17"
         }
+      }
+    },
+    {
+      "files": ["**/*.md"],
+      "processor": "markdown/markdown"
+    },
+    {
+      "files": ["**/*.md/*.js"],
+      "rules": {
+        "no-console": 0,
+        "strict": 0,
+
+        "import/no-unresolved": 0,
+
+        "unicorn/filename-case": 0
       }
     }
   ]
