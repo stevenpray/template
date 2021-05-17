@@ -5,7 +5,6 @@ import ptimeout from "p-timeout";
 import pino, { destination } from "pino";
 import { Context } from "./context";
 import type Pino from "pino";
-import type { SetOptional } from "type-fest";
 import type { Command, CommandClass } from "./command";
 import type { Logger } from "./logger";
 import type { Nullable } from "./types";
@@ -25,7 +24,7 @@ interface CliDefaults {
   };
 }
 
-export interface CliOptions extends SetOptional<CliDefaults> {
+export interface CliOptions extends Partial<CliDefaults> {
   logger?: Logger;
 }
 
