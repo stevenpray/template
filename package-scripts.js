@@ -1,7 +1,7 @@
 "use strict";
 
 const utils = require("nps-utils");
-require("./env.js");
+require("./env");
 
 /**
  * @type {import("type-fest").PackageJson}

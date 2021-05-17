@@ -2,11 +2,11 @@ import { constants } from "os";
 import { defaultsDeep } from "lodash";
 import minimist from "minimist";
 import ptimeout from "p-timeout";
-import type Pino from "pino";
 import pino, { destination } from "pino";
+import { Context } from "./context";
+import type Pino from "pino";
 import type { SetOptional } from "type-fest";
 import type { Command, CommandClass } from "./command";
-import { Context } from "./context";
 import type { Logger } from "./logger";
 import type { Nullable } from "./types";
 
@@ -36,7 +36,7 @@ export class Cli {
     commands: new Map<Nullable<string>, CommandClass>(),
     exit: {
       signals: ["SIGBREAK", "SIGHUP", "SIGINT", "SIGTERM", "SIGUSR2"],
-      timeout: 10000,
+      timeout: 10_000,
     },
   };
 
@@ -73,13 +73,13 @@ export class Cli {
     });
 
     // Graceful exit on POSIX signals.
-    this.config.exit.signals.forEach((signal) =>
+    for (const signal of this.config.exit.signals) {
       process.on(signal, () => {
         this.logger.trace("process received signal: %s", signal);
         const code = 128 + constants.signals[signal];
         void this.exit(code, signal);
-      }),
-    );
+      });
+    }
 
     // Graceful exit on Windows and PM2 "shutdown_with_message".
     process.on("message", (message) => {

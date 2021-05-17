@@ -43,8 +43,7 @@
     "plugin:promise/recommended",
     "plugin:sonarjs/recommended",
     "plugin:unicorn/recommended",
-    "plugin:prettier/recommended",
-    "prettier/babel"
+    "plugin:prettier/recommended"
   ],
   "rules": {
     "array-callback-return": 2,
@@ -180,6 +179,7 @@
     "symbol-description": 2,
     "valid-typeof": 0, // @override eslint:recommended: @see babel/valid-typeof
     "vars-on-top": 1,
+
     "babel/camelcase": [1, { "properties": "always" }],
     "babel/new-cap": 1,
     "babel/no-invalid-this": 2,
@@ -233,6 +233,7 @@
     "jsdoc/require-hyphen-before-param-description": 1,
     "jsdoc/require-param-description": 0, // @override jsdoc/recommended
     "jsdoc/require-returns-description": 0, // @override jsdoc/recommended
+
     "node/callback-return": 2,
     "node/exports-style": [1, "module.exports"],
     "node/file-extension-in-import": 0, // @see import/extensions
@@ -287,7 +288,9 @@
     "unicorn/prefer-dom-node-remove": 1, // @override unicorn/recommended severity
     "unicorn/prefer-includes": 1, // @override unicorn/recommended severity
     "unicorn/prefer-modern-dom-apis": 1, // @override unicorn/recommended severity
+    "unicorn/prefer-module": 0,
     "unicorn/prefer-negative-index": 1, // @override unicorn/recommended severity
+    "unicorn/prefer-node-protocol": 0,
     "unicorn/prefer-number-properties": 1, // @override unicorn/recommended severity
     "unicorn/prefer-optional-catch-binding": 1, // @override unicorn/recommended severity
     "unicorn/prefer-query-selector": 1, // @override unicorn/recommended severity
@@ -377,8 +380,7 @@
       "extends": [
         "plugin:import/typescript",
         "plugin:@typescript-eslint/recommended",
-        "plugin:@typescript-eslint/recommended-requiring-type-checking",
-        "prettier/@typescript-eslint"
+        "plugin:@typescript-eslint/recommended-requiring-type-checking"
       ],
       "rules": {
         "default-param-last": 0, // @see @typescript-eslint/default-param-last

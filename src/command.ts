@@ -1,5 +1,5 @@
-import type { ChildProcess } from "child_process";
 import execa from "execa";
+import type { ChildProcess } from "child_process";
 import type { CliArgs } from "./cli";
 import type { Context } from "./context";
 import type { Logger } from "./logger";

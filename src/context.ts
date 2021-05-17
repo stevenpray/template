@@ -1,6 +1,6 @@
 import root from "app-root-path";
-import type { Paths } from "env-paths";
 import paths from "env-paths";
+import type { Paths } from "env-paths";
 import type { PackageJson, SetRequired } from "type-fest";
 
 type Dir = Paths & { run?: string };
