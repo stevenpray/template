@@ -15,7 +15,7 @@
   "main": "lib/index.js",
   "bin": "bin/index.js",
   "engines": {
-    "node": ">=12.4"
+    "node": ">=12.10"
   },
   "scripts": {
     "start": "nps npm.start",
