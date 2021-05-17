@@ -1,0 +1,4 @@
+{
+  "ignoreDeps": ["dev"],
+  "ignorePackages": ["@babel/runtime-corejs3", "core-js"]
+}
