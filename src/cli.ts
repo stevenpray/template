@@ -1,6 +1,6 @@
-import { constants } from "os";
 import { defaultsDeep } from "lodash";
 import minimist from "minimist";
+import { constants } from "os";
 import ptimeout from "p-timeout";
 import pino, { destination } from "pino";
 import { Context } from "./context";
@@ -38,27 +38,84 @@ export class Cli {
   };
 
   private readonly config: Readonly<CliConfig>;
-  private readonly logger: Logger;
-  private readonly context: Context;
 
-  private exiting: boolean;
+  private _logger?: Logger;
+
   private command?: Command;
+  private context: Context;
+  private exiting: boolean;
 
   constructor(options?: CliOptions) {
     this.config = defaultsDeep(options, Cli.defaults) as CliConfig;
-    this.context = new Context();
-    this.logger =
-      options?.logger ??
-      (pino(
-        { prettyPrint: this.context.env === "development" && { suppressFlushSyncWarning: true } },
-        destination({ sync: true }),
-      ) as Logger);
-
     this.exiting = false;
+    this._logger = this.config.logger;
   }
 
   async run(argv: Readonly<string[]> = process.argv) {
-    // Handle warnings and deprecation messages.
+    this.listen();
+
+    const { name, options } = this.parse(argv);
+
+    this.context = new Context(options.debug);
+
+    if (this.context.env === "development") {
+      this.logger.info("executing in development environment (debug: %s)", options.debug);
+    } else if (options.debug) {
+      this.logger.warn("executing with debug enabled");
+    }
+
+    if (name != null) {
+      const commandClass = this.config.commands.get(name);
+      if (commandClass) {
+        this.command = new commandClass(this.context, this.logger.child({ name }));
+      }
+    }
+
+    return this.command?.run(options);
+  }
+
+  private async exit(code = 0, signal: Nullable<Signal> = null) {
+    if (this.exiting) {
+      return;
+    }
+    this.exiting = true;
+
+    try {
+      // Attempt to exit gracefully.
+      const exit = this.command?.exit(code, signal);
+      if (exit instanceof Promise) {
+        await ptimeout(exit, this.config.exit.timeout, "graceful exit timed-out");
+      }
+      process.nextTick(process.exit.bind(process, code));
+    } catch (error) {
+      // Graceful exit failed with error.
+      pino.final(this.logger as Pino.Logger).error(error);
+      process.kill(process.pid, "SIGKILL");
+    }
+  }
+
+  private get logger() {
+    if (this._logger == null) {
+      this._logger = pino(
+        {
+          level:
+            this.context.env === "development"
+              ? this.context.debug
+                ? "trace"
+                : "debug"
+              : this.context.debug
+              ? "debug"
+              : "info",
+          prettyPrint: this.context.env === "development" && { suppressFlushSyncWarning: true },
+        },
+        destination({ sync: false }),
+      ) as Logger;
+    }
+    return this._logger;
+  }
+
+  private listen() {
+    // Handle warning and deprecation messages.
     process.on("warning", (warning) => {
       this.logger.warn(warning);
     });
@@ -108,49 +165,13 @@ export class Cli {
         .final(this.logger as Pino.Logger)
         .trace("process exit (code: %d, graceful: %s)", code, this.exiting);
     });
+  }
 
-    // Parse command `name` and `options` from argv.
+  private parse(argv: Readonly<string[]>) {
     const [, , ...args] = argv;
     const { _, ...options } = minimist<CliArgs>(args, { boolean: "debug" });
     const [name] = _;
 
-    this.logger.level =
-      this.context.env === "development"
-        ? options.debug
-          ? "trace"
-          : "debug"
-        : options.debug
-        ? "debug"
-        : "info";
-
-    if (name) {
-      const commandClass = this.config.commands.get(name);
-      if (commandClass) {
-        this.command = new commandClass(this.context, this.logger.child({ name }));
-      }
-    }
-
-    await this.command?.run(options);
-  }
-
-  private async exit(code = 0, signal: Nullable<Signal> = null) {
-    if (this.exiting) {
-      return;
-    }
-    this.exiting = true;
-
-    try {
-      // Attempt to exit gracefully if the command defines an exit function.
-      const exit = this.command?.exit(code, signal);
-      if (exit instanceof Promise) {
-        await ptimeout(exit, this.config.exit.timeout, "graceful exit timed-out");
-      }
-      // eslint-disable-next-line unicorn/no-process-exit
-      process.exit(code);
-    } catch (error) {
-      // Graceful exit failed with error.
-      pino.final(this.logger as Pino.Logger).error(error);
-      process.kill(process.pid, "SIGKILL");
-    }
+    return { name, options };
   }
 }
