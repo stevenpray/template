@@ -4,6 +4,7 @@ import { constants } from "os";
 import ptimeout from "p-timeout";
 import pino, { destination } from "pino";
 import { Context } from "./context";
+
 import type Pino from "pino";
 import type { Command, CommandClass } from "./command";
 import type { Logger } from "./logger";

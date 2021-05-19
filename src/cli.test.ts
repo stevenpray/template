@@ -1,5 +1,6 @@
 import { Cli } from "./cli";
 import { Command } from "./command";
+
 import type { CommandClass } from "./command";
 import type { Nullable } from "./types";
 

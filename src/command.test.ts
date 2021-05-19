@@ -1,5 +1,6 @@
 import { mock } from "jest-mock-extended";
 import { Command } from "./command";
+
 import type { Context } from "./context";
 import type { Logger } from "./logger";
 
