@@ -1,4 +1,13 @@
 {
-  "ignoreDeps": ["dev"],
-  "ignorePackages": ["@babel/runtime-corejs3", "core-js"]
+  "ignorePackages": [
+    "@babel/core",
+    "@babel/plugin-transform-runtime",
+    "@babel/preset-env",
+    "@babel/runtime-corejs3",
+    "core-js",
+    "eslint",
+    "eslint-plugin-prettier",
+    "nodemon",
+    "semantic-release"
+  ]
 }
