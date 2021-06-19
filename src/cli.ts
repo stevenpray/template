@@ -1,19 +1,14 @@
 import { defaultsDeep } from "lodash";
-import minimist from "minimist";
+import mri from "mri";
 import { constants } from "os";
 import ptimeout from "p-timeout";
 import pino, { destination } from "pino";
 import { Context } from "./context";
 
 import type Pino from "pino";
-import type { Command, CommandClass } from "./command";
+import type { Command, CommandClass, CommandOptions } from "./command";
 import type { Logger } from "./logger";
 import type { Nullable } from "./types";
-
-export interface CliArgs {
-  debug: boolean;
-  [name: string]: any;
-}
 
 interface CliDefaults {
   commands: ReadonlyMap<Nullable<string>, CommandClass>;
@@ -50,6 +45,26 @@ export class Cli {
     this.config = defaultsDeep(options, Cli.defaults) as CliConfig;
     this.exiting = false;
     this._logger = this.config.logger;
+  }
+
+  private get logger() {
+    if (this._logger == null) {
+      this._logger = pino(
+        {
+          level:
+            this.context.env === "development"
+              ? this.context.debug
+                ? "trace"
+                : "debug"
+              : this.context.debug
+              ? "debug"
+              : "info",
+          prettyPrint: this.context.env === "development" && { suppressFlushSyncWarning: true },
+        },
+        destination({ sync: false }),
+      ) as Logger;
+    }
+    return this._logger;
   }
 
   async run(argv: Readonly<string[]> = process.argv) {
@@ -93,26 +108,6 @@ export class Cli {
       pino.final(this.logger as Pino.Logger).error(error);
       process.kill(process.pid, "SIGKILL");
     }
-  }
-
-  private get logger() {
-    if (this._logger == null) {
-      this._logger = pino(
-        {
-          level:
-            this.context.env === "development"
-              ? this.context.debug
-                ? "trace"
-                : "debug"
-              : this.context.debug
-              ? "debug"
-              : "info",
-          prettyPrint: this.context.env === "development" && { suppressFlushSyncWarning: true },
-        },
-        destination({ sync: false }),
-      ) as Logger;
-    }
-    return this._logger;
   }
 
   private listen() {
@@ -170,9 +165,9 @@ export class Cli {
 
   private parse(argv: Readonly<string[]>) {
     const [, , ...args] = argv;
-    const { _, ...options } = minimist<CliArgs>(args, { boolean: "debug" });
+    const { _, ...options } = mri(args);
     const [name] = _;
 
-    return { name, options };
+    return { name, options } as { name?: string; options: CommandOptions };
   }
 }

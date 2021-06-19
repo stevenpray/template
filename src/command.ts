@@ -1,12 +1,14 @@
 import execa from "execa";
 
 import type { ChildProcess } from "child_process";
-import type { CliArgs } from "./cli";
 import type { Context } from "./context";
 import type { Logger } from "./logger";
 import type { MaybePromise } from "./types";
 
-export type CommandOptions = CliArgs;
+export interface CommandOptions {
+  debug: boolean;
+  [name: string]: any;
+}
 
 export interface CommandClass {
   new (context: Context, logger: Logger): Command;
