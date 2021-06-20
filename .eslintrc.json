@@ -476,7 +476,8 @@
         "@typescript-eslint/unbound-method": 0
       },
       "settings": {
-        "import/extensions": [".js", ".json", ".jsx", ".ts", ".tsx"]
+        "import/extensions": [".js", ".json", ".jsx", ".ts", ".tsx"],
+        "import/resolver": { "typescript": {} }
       }
     },
     {
