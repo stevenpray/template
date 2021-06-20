@@ -23,7 +23,8 @@ module.exports = {
       `babel --quiet --env-name=${env} --extensions=".js,.ts" --ignore="**/*.test.ts" --source-maps --out-dir="${dir.out}" "${dir.src}"`,
     ),
     lint: {
-      default: utils.series.nps("lint.scripts", "lint.types"),
+      default: utils.series.nps("lint.docs", "lint.scripts", "lint.types"),
+      docs: "markdownlint .",
       scripts: "eslint .",
       types: "tsc",
     },
