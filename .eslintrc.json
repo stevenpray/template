@@ -236,6 +236,19 @@
     "jsdoc/require-description": 0,
     "jsdoc/require-description-complete-sentence": 1,
     "jsdoc/require-hyphen-before-param-description": 1,
+    "jsdoc/require-jsdoc": [
+      1,
+      {
+        "require": {
+          "ArrowFunctionExpression": true, // @override jsdoc/recommended
+          "ClassDeclaration": true, // @override jsdoc/recommended
+          "ClassExpression": true, // @override jsdoc/recommended
+          "FunctionDeclaration": true,
+          "FunctionExpression": true, // @override jsdoc/recommended
+          "MethodDefinition": true // @override jsdoc/recommended
+        }
+      }
+    ],
     "jsdoc/require-param-description": 0, // @override jsdoc/recommended
     "jsdoc/require-returns-description": 0, // @override jsdoc/recommended
 
@@ -306,11 +319,13 @@
     "unicorn/prefer-dom-node-remove": 1, // @override unicorn/recommended severity
     "unicorn/prefer-includes": 1, // @override unicorn/recommended severity
     "unicorn/prefer-modern-dom-apis": 1, // @override unicorn/recommended severity
-    "unicorn/prefer-module": 0,
+    "unicorn/prefer-module": 0, // @override unicorn/recommended
     "unicorn/prefer-negative-index": 1, // @override unicorn/recommended severity
-    "unicorn/prefer-node-protocol": 0,
+    "unicorn/prefer-node-protocol": 0, // @override unicorn/recommended
     "unicorn/prefer-number-properties": 1, // @override unicorn/recommended severity
+    "unicorn/prefer-object-has-own": 1,
     "unicorn/prefer-optional-catch-binding": 1, // @override unicorn/recommended severity
+    "unicorn/prefer-prototype-methods": 0, // @override unicorn/recommended
     "unicorn/prefer-query-selector": 1, // @override unicorn/recommended severity
     "unicorn/prefer-set-has": 1, // @override unicorn/recommended severity
     "unicorn/prefer-spread": 1, // @override unicorn/recommended severity
@@ -321,7 +336,8 @@
   "settings": {
     "import/extensions": [".js", ".json"],
     "jsdoc": {
-      "mode": "permissive"
+      "mode": "typescript",
+      "tagNamePreference": { "returns": "return" }
     }
   },
   "overrides": [
