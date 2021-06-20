@@ -1,12 +1,12 @@
 "use strict";
 
-const path = require("path");
+const root = require("app-root-path");
 const utils = require("nps-utils");
 const pkg = require("./package.json");
 
 const dir = {
-  out: path.resolve(__dirname, pkg.directories.lib),
-  src: path.resolve(__dirname, pkg.directories.src),
+  out: root.resolve(pkg.directories.lib),
+  src: root.resolve(pkg.directories.src),
 };
 
 const env = process.env.NODE_ENV || "development";
@@ -19,10 +19,14 @@ module.exports = {
     clean: utils.rimraf(dir.out),
     start: "nodemon --no-warnings bin --debug",
     build: utils.series(
-      "tsc --project tsconfig.types.json",
+      "tsc --project tsconfig.build.json",
       `babel --quiet --env-name=${env} --extensions=".js,.ts" --ignore="**/*.test.ts" --source-maps --out-dir="${dir.out}" "${dir.src}"`,
     ),
-    lint: `eslint .`,
+    lint: {
+      default: utils.series.nps("lint.scripts", "lint.types"),
+      scripts: "eslint .",
+      types: "tsc",
+    },
     test: utils.crossEnv("NODE_ENV=test jest --coverage"),
 
     npm: {

@@ -9,14 +9,11 @@ type Env = NonNullable<NodeJS.ProcessEnv["NODE_ENV"]>;
 type Pkg = SetRequired<PackageJson, "name" | "version">;
 
 export class Context {
-  readonly debug: boolean;
   readonly dir: Dir;
   readonly env: Env;
   readonly pkg: Pkg;
 
-  constructor(debug = false) {
-    this.debug = debug;
-
+  constructor() {
     // eslint-disable-next-line node/no-process-env,@typescript-eslint/prefer-nullish-coalescing
     this.env = process.env.NODE_ENV || "development";
 

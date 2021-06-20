@@ -6,6 +6,5 @@
     "noEmit": false,
     "rootDir": "src"
   },
-  "exclude": ["**/*.test.ts"],
-  "include": ["globals.d.ts", "src/**/*"]
+  "exclude": ["node_modules", "**/*.test.ts"]
 }

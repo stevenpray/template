@@ -7,11 +7,6 @@ describe("Context", () => {
     expect(new Context()).toBeInstanceOf(Context);
   });
 
-  it("should define debug property", () => {
-    expect.assertions(1);
-    expect(new Context().debug).toBeBoolean();
-  });
-
   it("should define dir property", () => {
     expect.assertions(1);
     expect(new Context().dir).toBeObject();

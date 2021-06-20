@@ -11,7 +11,6 @@ import type { Logger } from "./logger";
 import type { Nullable } from "./types";
 
 interface CliDefaults {
-  commands: ReadonlyMap<Nullable<string>, CommandClass>;
   exit: {
     signals: Signal[];
     timeout: number;
@@ -24,64 +23,62 @@ export interface CliOptions extends Partial<CliDefaults> {
 
 type CliConfig = CliOptions & CliDefaults;
 
+type CliCommandMap = ReadonlyMap<string, CommandClass>;
+
 export class Cli {
   private static readonly defaults: Readonly<CliDefaults> = {
-    commands: new Map<Nullable<string>, CommandClass>(),
     exit: {
       signals: ["SIGBREAK", "SIGHUP", "SIGINT", "SIGTERM", "SIGUSR2"],
       timeout: 10_000,
     },
   };
 
+  private readonly commands?: CliCommandMap;
   private readonly config: Readonly<CliConfig>;
-
-  private _logger?: Logger;
+  private readonly context: Context;
+  private readonly logger: Logger;
 
   private command?: Command;
-  private context: Context;
-  private exiting: boolean;
+  private exiting = false;
 
-  constructor(options?: CliOptions) {
+  constructor(commands?: CliCommandMap, options?: CliOptions) {
+    this.commands = commands;
     this.config = defaultsDeep(options, Cli.defaults) as CliConfig;
-    this.exiting = false;
-    this._logger = this.config.logger;
-  }
-
-  private get logger() {
-    if (this._logger == null) {
-      this._logger = pino(
-        {
-          level:
-            this.context.env === "development"
-              ? this.context.debug
-                ? "trace"
-                : "debug"
-              : this.context.debug
-              ? "debug"
-              : "info",
-          prettyPrint: this.context.env === "development" && { suppressFlushSyncWarning: true },
+    this.context = new Context();
+    this.logger = pino(
+      {
+        prettyPrint: this.context.env === "development" && {
+          ignore: "hostname,name",
+          messageFormat: "{name}: {msg}",
+          translateTime: "HH:MM:ss.l",
+          suppressFlushSyncWarning: true,
         },
-        destination({ sync: false }),
-      ) as Logger;
-    }
-    return this._logger;
+      },
+      destination({ sync: false }),
+    ) as Logger;
   }
 
   async run(argv: Readonly<string[]> = process.argv) {
     this.listen();
-
     const { name, options } = this.parse(argv);
 
-    this.context = new Context(options.debug);
+    this.logger.level =
+      this.context.env === "development"
+        ? options.debug
+          ? "trace"
+          : "debug"
+        : options.debug
+        ? "debug"
+        : "info";
 
     if (this.context.env === "development") {
-      this.logger.info("executing in development environment (debug: %s)", options.debug);
+      this.logger.debug("executing in development environment (debug: %s)", options.debug);
     } else if (options.debug) {
       this.logger.warn("executing with debug enabled");
     }
 
     if (name != null) {
-      const commandClass = this.config.commands.get(name);
+      const commandClass = this.commands?.get(name);
       if (commandClass) {
         this.command = new commandClass(this.context, this.logger.child({ name }));
       }
@@ -165,7 +162,7 @@ export class Cli {
 
   private parse(argv: Readonly<string[]>) {
     const [, , ...args] = argv;
-    const { _, ...options } = mri(args);
+    const { _, ...options } = mri(args, { boolean: "debug", default: { debug: false } });
     const [name] = _;
 
     return { name, options } as { name?: string; options: CommandOptions };

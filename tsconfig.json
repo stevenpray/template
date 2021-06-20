@@ -17,6 +17,8 @@
     "newLine": "LF",
     "noEmit": true,
     "noEmitOnError": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true,
     "outDir": "lib",
     "preserveConstEnums": true,
@@ -25,8 +27,7 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "strictPropertyInitialization": false,
     "target": "ESNext"
   },
-  "include": ["jest.setup.js", "globals.d.ts", "src/**/*"]
+  "include": ["jest.setup.js", "globals.d.ts", "src/**/*", "types/**/*.d.ts"]
 }
