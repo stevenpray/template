@@ -7,6 +7,7 @@ module.exports = ({ env }) => {
   return {
     ignore: ["**/*.d.ts"],
     plugins: [
+      ["babel-plugin-module-resolver", { alias: {} }],
       ["babel-plugin-transform-typescript-metadata"],
       ["@babel/plugin-proposal-decorators", { legacy: true }],
       ["@babel/plugin-proposal-class-properties", { loose: true }],
