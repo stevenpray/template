@@ -11,7 +11,7 @@ describe("Command", () => {
   });
 
   it("should define exit method", () => {
-    expect.assertions(2);
+    expect.assertions(1);
 
     class FooCommand extends Command {
       exec() {
@@ -40,18 +40,5 @@ describe("Command", () => {
     const command = new FooCommand(mock<Context>(), mock<Logger>());
     command.exec();
     expect(await command.exit()).toBeUndefined();
-  });
-
-  it("should define protected spawn method", () => {
-    expect.assertions(1);
-
-    class FooCommand extends Command {
-      exec() {
-        return undefined;
-      }
-    }
-
-    const command = new FooCommand(mock<Context>(), mock<Logger>());
-    expect(command["spawn"]("node -v", [], { stdout: "ignore" }).pid).toBeNumber();
   });
 });

@@ -46,7 +46,7 @@ export abstract class Command<O extends CommandOptions = CommandOptions>
 
   abstract exec(options?: CommandOptions): MaybePromise<void>;
 
-  protected spawn(command: string, args: string[] = [], options?: Execa.Options) {
+  protected spawn(command: string, args?: string[], options?: Execa.Options) {
     const config = defaults(options, { stdio: [process.stdin, process.stdout, process.stderr] });
     const child: ChildProcess = execa(command, args, config);
     this.logger.debug("child spawned (pid: %d, %o)", child.pid, { command, args, options });

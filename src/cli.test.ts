@@ -10,11 +10,9 @@ describe("Cli", () => {
     expect(new Cli()).toBeInstanceOf(Cli);
   });
 
-  it("should have run method", async () => {
-    expect.assertions(3);
+  it("should have run method", () => {
+    expect.assertions(1);
     expect(new Cli().exec).toBeFunction();
-    expect(new Cli().exec()).toBeInstanceOf(Promise);
-    expect(await new Cli().exec()).toBeUndefined();
   });
 
   it("should run command by name", async () => {
