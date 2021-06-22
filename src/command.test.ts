@@ -14,41 +14,44 @@ describe("Command", () => {
     expect.assertions(2);
 
     class FooCommand extends Command {
-      run() {
+      exec() {
         return undefined;
       }
     }
 
-    expect(new FooCommand(mock<Context>(), mock<Logger>()).run).toBeFunction();
-    expect(new FooCommand(mock<Context>(), mock<Logger>()).exit).toBeFunction();
+    expect(new FooCommand(mock<Context>(), mock<Logger>()).exec).toBeFunction();
   });
 
   it("should define protected context and logger properties", async () => {
     expect.assertions(3);
 
     class FooCommand extends Command {
-      run() {
+      exec() {
         expect(this.context).toBeDefined();
         expect(this.logger).toBeDefined();
         return undefined;
       }
+
+      async exit() {
+        return new Promise((resolve) => setTimeout(resolve, 0));
+      }
     }
 
     const command = new FooCommand(mock<Context>(), mock<Logger>());
-    command.run();
-    expect(await command.exit(0, null)).toBeUndefined();
+    command.exec();
+    expect(await command.exit()).toBeUndefined();
   });
 
   it("should define protected spawn method", () => {
     expect.assertions(1);
 
     class FooCommand extends Command {
-      run() {
+      exec() {
         return undefined;
       }
     }
 
     const command = new FooCommand(mock<Context>(), mock<Logger>());
-    expect(command["spawn"]("node -v", { stdout: "ignore" }).pid).toBeNumber();
+    expect(command["spawn"]("node -v", [], { stdout: "ignore" }).pid).toBeNumber();
   });
 });

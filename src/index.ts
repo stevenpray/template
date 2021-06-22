@@ -2,10 +2,8 @@ import "reflect-metadata";
 
 import { Cli } from "./cli";
 
-export const cli = new Cli();
+import type { CommandClass } from "./command";
 
-export * from "./cli";
-export * from "./command";
-export * from "./context";
-export * from "./logger";
-export * from "./types";
+const commands = new Map<string, CommandClass>();
+
+export const cli = () => new Cli(commands).exec();

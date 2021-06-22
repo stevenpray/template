@@ -2,28 +2,28 @@ import { defaultsDeep } from "lodash";
 import mri from "mri";
 import { constants } from "os";
 import ptimeout from "p-timeout";
-import pino, { destination } from "pino";
+import pino, { destination, final } from "pino";
 import { Context } from "./context";
+import { DefaultCommand } from "./default/default.command";
 
 import type Pino from "pino";
-import type { Command, CommandClass, CommandOptions } from "./command";
+import type { ReadonlyDeep } from "type-fest";
+import type { CommandClass, CommandInterface, CommandOptions } from "./command";
 import type { Logger } from "./logger";
 import type { Nullable } from "./types";
 
-interface CliDefaults {
+export interface CliDefaults {
   exit: {
-    signals: Signal[];
+    signals: NodeJS.Signals[];
     timeout: number;
   };
 }
 
-export interface CliOptions extends Partial<CliDefaults> {
-  logger?: Logger;
-}
+export type CliOptions = Partial<CliDefaults>;
 
-type CliConfig = CliOptions & CliDefaults;
+export type CliConfig = CliOptions & CliDefaults;
 
-type CliCommandMap = ReadonlyMap<string, CommandClass>;
+export type CliCommandMap = ReadonlyMap<string, CommandClass>;
 
 export class Cli {
   private static readonly defaults: Readonly<CliDefaults> = {
@@ -34,76 +34,76 @@ export class Cli {
   };
 
   private readonly commands?: CliCommandMap;
-  private readonly config: Readonly<CliConfig>;
+  private readonly config: ReadonlyDeep<CliConfig>;
   private readonly context: Context;
   private readonly logger: Logger;
 
-  private command?: Command;
+  private command?: CommandInterface;
   private exiting = false;
 
   constructor(commands?: CliCommandMap, options?: CliOptions) {
     this.commands = commands;
     this.config = defaultsDeep(options, Cli.defaults) as CliConfig;
     this.context = new Context();
+
     this.logger = pino(
       {
         prettyPrint: this.context.env === "development" && {
-          ignore: "hostname,name",
-          messageFormat: "{name}: {msg}",
+          ignore: "hostname",
           translateTime: "HH:MM:ss.l",
           suppressFlushSyncWarning: true,
         },
       },
-      destination({ sync: false }),
+      destination({ sync: true }),
     ) as Logger;
   }
 
-  async run(argv: Readonly<string[]> = process.argv) {
+  async exec(argv: Readonly<string[]> = process.argv) {
     this.listen();
-    const { name, options } = this.parse(argv);
+
+    const [, , ...args] = argv;
+    const { _, ...options } = mri(args, { boolean: "debug", default: { debug: false } });
+    const name = _[0];
+    const { debug } = options as CommandOptions;
 
     this.logger.level =
-      this.context.env === "development"
-        ? options.debug
-          ? "trace"
-          : "debug"
-        : options.debug
-        ? "debug"
-        : "info";
+      this.context.env === "development" ? (debug ? "trace" : "debug") : debug ? "debug" : "info";
 
     if (this.context.env === "development") {
-      this.logger.debug("executing in development environment (debug: %s)", options.debug);
-    } else if (options.debug) {
+      this.logger.debug("executing in development environment (debug: %s)", debug);
+    } else if (debug) {
       this.logger.warn("executing with debug enabled");
     }
 
-    if (name != null) {
-      const commandClass = this.commands?.get(name);
-      if (commandClass) {
-        this.command = new commandClass(this.context, this.logger.child({ name }));
+    if (name == null) {
+      this.command = new DefaultCommand(this.context, this.logger, options);
+    } else {
+      const CommandCtor = this.commands?.get(name);
+      if (CommandCtor == null) {
+        throw new Error("command not found");
       }
+      const logger = this.logger.child({ name });
+      this.command = new CommandCtor(this.context, logger, options as CommandOptions);
     }
-
-    return this.command?.run(options);
+    await this.command.exec();
   }
 
-  private async exit(code = 0, signal: Nullable<Signal> = null) {
+  private async exit(code = 0, signal: Nullable<NodeJS.Signals> = null) {
     if (this.exiting) {
       return;
     }
     this.exiting = true;
-
     try {
       // Attempt to exit gracefully.
-      const exit = this.command?.exit(code, signal);
+      const exit = this.command?.exit?.(code, signal);
       if (exit instanceof Promise) {
         await ptimeout(exit, this.config.exit.timeout, "graceful exit timed-out");
       }
       process.nextTick(process.exit.bind(process, code));
     } catch (error) {
       // Graceful exit failed with error.
-      pino.final(this.logger as Pino.Logger).error(error);
-      process.kill(process.pid, "SIGKILL");
+      final(this.logger as Pino.Logger).error(error);
+      process.nextTick(process.kill.bind(process, process.pid, "SIGKILL"));
     }
   }
 
@@ -112,13 +112,15 @@ export class Cli {
     process.on("warning", (warning) => {
       this.logger.warn(warning);
     });
-
     // Raise uncaught exception on unhandled promise rejection.
     process.on("unhandledRejection", (reason) => {
       // eslint-disable-next-line @typescript-eslint/no-throw-literal
       throw reason;
     });
-
+    // Graceful exit on stdin EOF.
+    process.stdin.once("end", () => {
+      void this.exit();
+    });
     // Graceful exit on POSIX signals.
     for (const signal of this.config.exit.signals) {
       process.on(signal, () => {
@@ -127,7 +129,6 @@ export class Cli {
         void this.exit(code, signal);
       });
     }
-
     // Graceful exit on Windows and PM2 "shutdown_with_message".
     process.on("message", (message) => {
       if (message === "shutdown") {
@@ -135,36 +136,22 @@ export class Cli {
         void this.exit();
       }
     });
-
-    // Graceful exit on stdin EOF.
-    process.stdin.once("end", () => {
-      void this.exit();
-    });
-
     // Graceful exit on empty event loop.
     process.once("beforeExit", (code) => {
       void this.exit(code);
     });
-
     // Graceful exit on exception.
     process.once("uncaughtException", (error) => {
       this.logger.fatal(error);
       void this.exit(1);
     });
-
     // Trace process exit.
     process.once("exit", (code) => {
-      pino
-        .final(this.logger as Pino.Logger)
-        .trace("process exit (code: %d, graceful: %s)", code, this.exiting);
+      final(this.logger as Pino.Logger).trace(
+        "process exit (code: %d, graceful: %s)",
+        code,
+        this.exiting,
+      );
     });
-  }
-
-  private parse(argv: Readonly<string[]>) {
-    const [, , ...args] = argv;
-    const { _, ...options } = mri(args, { boolean: "debug", default: { debug: false } });
-    const [name] = _;
-
-    return { name, options } as { name?: string; options: CommandOptions };
   }
 }

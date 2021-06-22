@@ -1,42 +1,75 @@
+import cluster from "cluster";
 import execa from "execa";
+import { defaults } from "lodash";
 
 import type { ChildProcess } from "child_process";
+import type Execa from "execa";
 import type { Context } from "./context";
 import type { Logger } from "./logger";
 import type { MaybePromise } from "./types";
 
-export interface CommandOptions {
+export interface CommandForkOptions {
+  env?: NodeJS.Dict<any> | null;
+  retry?: {
+    attempts?: number;
+    interval?: number;
+  };
+}
+
+export interface CommandDefaults extends NodeJS.Dict<any> {
   debug: boolean;
-  [name: string]: any;
 }
 
-export interface CommandClass {
-  new (context: Context, logger: Logger): Command;
+export type CommandOptions = Partial<CommandDefaults>;
+
+export interface CommandClass<O extends CommandOptions = CommandOptions> {
+  new (context: Context, logger: Logger, options: O): CommandInterface;
 }
 
-export abstract class Command {
+export interface CommandInterface {
+  exec: () => MaybePromise<void>;
+  exit?: (code: number, signal: NodeJS.Signals | null) => MaybePromise<void>;
+}
+
+export abstract class Command<O extends CommandOptions = CommandOptions>
+  implements CommandInterface
+{
   protected readonly context: Context;
   protected readonly logger: Logger;
+  protected readonly options?: Partial<O>;
 
-  constructor(context: Context, logger: Logger) {
+  constructor(context: Context, logger: Logger, options?: O) {
     this.context = context;
     this.logger = logger;
+    this.options = options;
   }
 
-  abstract run(options?: CommandOptions): MaybePromise<void>;
+  abstract exec(options?: CommandOptions): MaybePromise<void>;
 
-  // Define the method signature for optional use by child classes.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  exit(code: number, signal: Signal | null): MaybePromise<void> {
-    return undefined;
-  }
-
-  protected spawn(command: string, options?: execa.Options) {
-    const child: ChildProcess = execa.command(command, options);
+  protected spawn(command: string, args: string[] = [], options?: Execa.Options) {
+    const config = defaults(options, { stdio: [process.stdin, process.stdout, process.stderr] });
+    const child: ChildProcess = execa(command, args, config);
+    this.logger.debug("child spawned (pid: %d, %o)", child.pid, { command, args, options });
     child.on("error", (error) => this.logger.error(error));
-    child.on("exit", (code, signal) =>
-      this.logger.debug("child (pid: %d) exited (code: %d, signal: %s)", child.pid, code, signal),
-    );
+    child.on("exit", (code, signal) => {
+      this.logger.debug("child exited (pid: %d, %o)", child.pid, { code, signal });
+    });
     return child;
+  }
+
+  protected fork(options?: CommandForkOptions) {
+    const config = defaults(options, { env: null, retry: { attempts: 0, interval: 0 } });
+    const worker = cluster.fork(config.env);
+    const child = worker.process;
+    this.logger.debug("worker %d forked (pid: %d, %o)", worker.id, child.pid, config);
+    worker.on("error", (error) => this.logger.error(error));
+    worker.on("exit", (code, signal) => {
+      this.logger.debug("worker %d exited (pid: %d, %o)", worker.id, child.pid, { code, signal });
+      if (code === 1 && config.retry.attempts > 0) {
+        config.retry.attempts -= 1;
+        setTimeout(this.fork.bind(this, config), config.retry.interval);
+      }
+    });
+    return worker;
   }
 }
