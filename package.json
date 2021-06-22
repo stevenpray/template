@@ -1,11 +1,11 @@
 {
   "private": true,
-  "name": "@stevenpray/template-nodejs",
+  "name": "@stevenpray/template",
   "version": "1.0.0",
-  "description": "Node.js project template",
+  "description": "General purpose Node.js project template.",
   "license": "MIT",
   "author": "Steven Pray <steven@stevenpray.com>",
-  "repository": "github:stevenpray/template-nodejs",
+  "repository": "github:stevenpray/template",
   "directories": {
     "lib": "lib",
     "src": "src"
