@@ -1,8 +1,9 @@
 import { mock } from "jest-mock-extended";
 import { Command } from "./command";
 
+import type { CommandOptions } from "./command";
 import type { Context } from "./context";
-import type { Logger } from "./logger";
+import type { LoggerInterface } from "./logger";
 
 describe("Command", () => {
   it("should be exported class", () => {
@@ -10,35 +11,41 @@ describe("Command", () => {
     expect(Command).toBeFunction();
   });
 
-  it("should define exit method", () => {
-    expect.assertions(1);
+  describe("instance", () => {
+    const context = mock<Context>();
+    const logger = mock<LoggerInterface>();
+    const config: CommandOptions = { debug: true };
 
-    class FooCommand extends Command {
-      exec() {
-        return undefined;
-      }
-    }
+    it("should define exit method", () => {
+      expect.assertions(1);
 
-    expect(new FooCommand(mock<Context>(), mock<Logger>()).exec).toBeFunction();
-  });
-
-  it("should define protected context and logger properties", async () => {
-    expect.assertions(3);
-
-    class FooCommand extends Command {
-      exec() {
-        expect(this.context).toBeDefined();
-        expect(this.logger).toBeDefined();
-        return undefined;
+      class FooCommand extends Command {
+        exec() {
+          return undefined;
+        }
       }
 
-      async exit() {
-        return new Promise((resolve) => setTimeout(resolve, 0));
-      }
-    }
+      expect(new FooCommand(context, logger, config).exec).toBeFunction();
+    });
 
-    const command = new FooCommand(mock<Context>(), mock<Logger>());
-    command.exec();
-    expect(await command.exit()).toBeUndefined();
+    it("should define protected config, context, and logger properties", async () => {
+      expect.assertions(4);
+
+      class FooCommand extends Command {
+        exec() {
+          expect(this.config).toBeDefined();
+          expect(this.context).toBeDefined();
+          expect(this.logger).toBeDefined();
+        }
+
+        async exit() {
+          return Promise.resolve();
+        }
+      }
+
+      const command = new FooCommand(context, logger, config);
+      command.exec();
+      expect(await command.exit()).toBeUndefined();
+    });
   });
 });

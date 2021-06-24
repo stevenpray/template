@@ -1,15 +1,17 @@
-import { defaultsDeep } from "lodash";
+import cluster from "cluster";
 import mri from "mri";
 import { constants } from "os";
 import ptimeout from "p-timeout";
-import pino, { destination, final } from "pino";
+import { final } from "pino";
+import { Config } from "./config";
 import { Context } from "./context";
 import { DefaultCommand } from "./default/default.command";
+import { Logger } from "./logger";
 
 import type Pino from "pino";
 import type { ReadonlyDeep } from "type-fest";
 import type { CommandClass, CommandInterface, CommandOptions } from "./command";
-import type { Logger } from "./logger";
+import type { LoggerInterface, LogLevel } from "./logger";
 import type { Nullable } from "./types";
 
 export interface CliDefaults {
@@ -36,29 +38,20 @@ export class Cli {
   private readonly commands?: CliCommandMap;
   private readonly config: ReadonlyDeep<CliConfig>;
   private readonly context: Context;
-  private readonly logger: Logger;
 
   private command?: CommandInterface;
   private exiting = false;
+  private logger: LoggerInterface;
 
   constructor(commands?: CliCommandMap, options?: CliOptions) {
     this.commands = commands;
-    this.config = defaultsDeep(options, Cli.defaults) as CliConfig;
+    this.config = Config.defaults(options, Cli.defaults);
     this.context = new Context();
-
-    this.logger = pino(
-      {
-        prettyPrint: this.context.env === "development" && {
-          ignore: "hostname",
-          translateTime: "HH:MM:ss.l",
-          suppressFlushSyncWarning: true,
-        },
-      },
-      destination({ sync: true }),
-    ) as Logger;
+    this.logger = Logger.create(this.context.env);
   }
 
   async exec(argv: Readonly<string[]> = process.argv) {
+    process.title = this.context.pkg.name;
     this.listen();
 
     const [, , ...args] = argv;
@@ -66,13 +59,13 @@ export class Cli {
     const name = _[0];
     const { debug } = options as CommandOptions;
 
-    this.logger.level =
-      this.context.env === "development" ? (debug ? "trace" : "debug") : debug ? "debug" : "info";
-
-    if (this.context.env === "development") {
-      this.logger.debug("executing in development environment (debug: %s)", debug);
-    } else if (debug) {
-      this.logger.warn("executing with debug enabled");
+    // Configure logging level if debug is enabled.
+    if (debug) {
+      const level = this.logger.levels.values[this.logger.level]!;
+      const levels = this.logger.levels;
+      if (level > levels.values["trace"]!) {
+        this.logger.level = levels.labels[level - 10] as LogLevel;
+      }
     }
 
     if (name == null) {
@@ -82,8 +75,19 @@ export class Cli {
       if (CommandCtor == null) {
         throw new Error("command not found");
       }
-      const logger = this.logger.child({ name });
-      this.command = new CommandCtor(this.context, logger, options as CommandOptions);
+
+      // Configure process title and logger name.
+      const title = [name, cluster.isWorker && "worker"].filter(Boolean).join("/");
+      process.title = [process.title, title].join("/");
+      this.logger = this.logger.child({ name: title });
+
+      this.command = new CommandCtor(this.context, this.logger, options as CommandOptions);
+    }
+
+    if (this.context.env === "development") {
+      this.logger.debug("executing in development environment (options: %o)", options);
+    } else if (debug) {
+      this.logger.warn("executing with debug enabled");
     }
     await this.command.exec();
   }
@@ -102,7 +106,8 @@ export class Cli {
       process.nextTick(process.exit.bind(process, code));
     } catch (error) {
       // Graceful exit failed with error.
-      final(this.logger as Pino.Logger).error(error);
+      const logger = this.logger as Pino.Logger;
+      final(logger).error(error);
       process.nextTick(process.kill.bind(process, process.pid, "SIGKILL"));
     }
   }
@@ -147,11 +152,8 @@ export class Cli {
     });
     // Trace process exit.
     process.once("exit", (code) => {
-      final(this.logger as Pino.Logger).trace(
-        "process exit (code: %d, graceful: %s)",
-        code,
-        this.exiting,
-      );
+      const logger = this.logger as Pino.Logger;
+      final(logger).trace("process exit (code: %d, graceful: %s)", code, this.exiting);
     });
   }
 }

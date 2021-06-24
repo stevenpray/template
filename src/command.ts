@@ -4,8 +4,9 @@ import { defaults } from "lodash";
 
 import type { ChildProcess } from "child_process";
 import type Execa from "execa";
+import type { ConfigParams } from "./config";
 import type { Context } from "./context";
-import type { Logger } from "./logger";
+import type { LoggerInterface } from "./logger";
 import type { MaybePromise } from "./types";
 
 export interface CommandForkOptions {
@@ -16,14 +17,14 @@ export interface CommandForkOptions {
   };
 }
 
-export interface CommandDefaults extends NodeJS.Dict<any> {
+export interface CommandDefaults extends ConfigParams {
   debug: boolean;
 }
 
 export type CommandOptions = Partial<CommandDefaults>;
 
 export interface CommandClass<O extends CommandOptions = CommandOptions> {
-  new (context: Context, logger: Logger, options: O): CommandInterface;
+  new (context: Context, logger: LoggerInterface, options: O): CommandInterface;
 }
 
 export interface CommandInterface {
@@ -31,17 +32,17 @@ export interface CommandInterface {
   exit?: (code: number, signal: NodeJS.Signals | null) => MaybePromise<void>;
 }
 
-export abstract class Command<O extends CommandOptions = CommandOptions>
+export abstract class Command<C extends CommandOptions = CommandOptions>
   implements CommandInterface
 {
   protected readonly context: Context;
-  protected readonly logger: Logger;
-  protected readonly options?: Partial<O>;
+  protected readonly logger: LoggerInterface;
+  protected readonly config: C;
 
-  constructor(context: Context, logger: Logger, options?: O) {
+  constructor(context: Context, logger: LoggerInterface, config: C) {
     this.context = context;
     this.logger = logger;
-    this.options = options;
+    this.config = config;
   }
 
   abstract exec(options?: CommandOptions): MaybePromise<void>;
