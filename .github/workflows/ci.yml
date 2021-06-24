@@ -23,7 +23,8 @@ jobs:
           path: "${{ steps.cache-settings.outputs.dir }}"
           restore-keys: "${{ runner.os }}-"
       - run: "npm ci"
-      - run: "npm test"
+      - run: "npm run lint"
+      - run: "npm run test"
       - run: "npm pack"
     strategy:
       fail-fast: true
