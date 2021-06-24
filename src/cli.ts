@@ -1,5 +1,5 @@
 import cluster from "cluster";
-import mri from "mri";
+import minimist from "minimist";
 import { constants } from "os";
 import ptimeout from "p-timeout";
 import { final } from "pino";
@@ -55,7 +55,7 @@ export class Cli {
     this.listen();
 
     const [, , ...args] = argv;
-    const { _, ...options } = mri(args, { boolean: "debug", default: { debug: false } });
+    const { _, ...options } = minimist(args);
     const name = _[0];
     const { debug } = options as CommandOptions;
 
