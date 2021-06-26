@@ -45,7 +45,7 @@ export abstract class Command<C extends CommandOptions = CommandOptions>
     this.config = config;
   }
 
-  abstract exec(options?: CommandOptions): MaybePromise<void>;
+  abstract exec(): MaybePromise<void>;
 
   protected spawn(command: string, args?: string[], options?: Execa.Options) {
     const config = defaults(options, { stdio: [process.stdin, process.stdout, process.stderr] });
