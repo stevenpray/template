@@ -1,30 +1,58 @@
+import convict from "convict";
+import validator from "convict-format-with-validator";
+import { cosmiconfig } from "cosmiconfig";
+import fs from "fs/promises";
 import { defaultsDeep, isObject } from "lodash";
+import path from "path";
 
-import type { JsonValue, ReadonlyDeep } from "type-fest";
+import type Convict from "convict";
+import type { PartialDeep, ReadonlyDeep } from "type-fest";
+import type { Context } from "./context";
 
-export type ConfigParams = NodeJS.Dict<JsonValue>;
+export type ConfigValue = string | number | boolean | null | undefined;
 
-export class Config<O extends ConfigParams, D extends ConfigParams> {
-  readonly params: ReadonlyDeep<O & D>;
+export type ConfigParams = NodeJS.Dict<ConfigValue | ConfigValue[] | ConfigParams>;
 
-  constructor(options?: O, defaults?: D) {
-    this.params = Config.defaults(options, defaults);
+export type ConfigSchema<T> = Convict.Schema<T>;
+
+export class Config<T extends ConfigParams> {
+  protected readonly config: Convict.Config<T>;
+  protected readonly context: Context;
+
+  constructor(context: Context, schema: Convict.Schema<T>) {
+    this.context = context;
+
+    convict.addFormats(validator);
+    this.config = convict(schema);
   }
 
-  all() {
-    return this.params;
+  async load(options?: Partial<T>) {
+    const explorer = cosmiconfig(this.context.pkg.name);
+    const result = await explorer.search();
+    if (result?.config) {
+      this.config.load(result.config);
+    }
+    const filepath = path.join(this.context.dir.config, "config.json");
+    try {
+      const stats = await fs.stat(filepath);
+      if (stats.isFile()) {
+        this.config.loadFile(filepath);
+      }
+    } catch {}
+    if (options) {
+      this.config.load(options);
+    }
+    this.config.validate({ allowed: "strict" });
+    const props = this.config.getProperties();
+    return Config.freeze(props);
   }
 
-  get<Key extends keyof ReadonlyDeep<O & D>>(key: Key, value?: Required<ReadonlyDeep<O & D>>[Key]) {
-    return this.params[key] === undefined ? Config.freeze(value) : this.params[key];
-  }
-
-  static defaults<O extends ConfigParams, D extends ConfigParams>(o?: O, d?: D) {
-    const params = defaultsDeep(o, d) as O & D;
+  static defaults<O extends PartialDeep<D>, D extends ConfigParams>(options?: O, defaults?: D) {
+    const params = defaultsDeep(options, defaults) as O & D;
     return Config.freeze(params);
   }
 
-  private static freeze<T>(object: T) {
+  static freeze<T>(object: T) {
     if (isObject(object)) {
       for (const value of Object.values(object)) {
         if (isObject(value)) {

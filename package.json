@@ -14,7 +14,15 @@
     "bin",
     "lib"
   ],
-  "main": "lib",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "typesVersions": {
+    ">=4": {
+      "*": [
+        "lib/*"
+      ]
+    }
+  },
   "bin": "bin/index.js",
   "engines": {
     "node": ">=12.10"
@@ -37,16 +45,22 @@
   "dependencies": {
     "@babel/runtime-corejs3": "7.14.7",
     "app-root-path": "3.0.0",
+    "convict": "6.1.0",
+    "convict-format-with-validator": "6.0.1",
+    "convict-format-with-moment": "6.0.1",
     "core-js": "3.15.2",
+    "cosmiconfig": "7.0.0",
     "env-paths": "2.2.1",
     "execa": "5.1.1",
     "lodash": "4.17.21",
-    "minimist": "1.2.5",
     "p-timeout": "4.1.0",
     "pino": "6.12.0",
     "pino-pretty": "5.1.1",
     "reflect-metadata": "0.1.13",
-    "type-fest": "1.2.2"
+    "std-env": "2.3.0",
+    "type-fest": "1.2.2",
+    "yargs-parser": "20.2.9",
+    "yargs-unparser": "2.0.0"
   },
   "devDependencies": {
     "@babel/cli": "7.14.5",
@@ -71,11 +85,14 @@
     "@semantic-release/changelog": "5.0.1",
     "@semantic-release/git": "9.0.0",
     "@types/app-root-path": "1.2.4",
+    "@types/convict": "6.1.1",
+    "@types/convict-format-with-validator": "6.0.2",
     "@types/jest": "26.0.24",
     "@types/lodash": "4.14.171",
-    "@types/minimist": "1.2.2",
     "@types/node": "16.3.1",
     "@types/pino": "6.3.9",
+    "@types/yargs-parser": "20.2.1",
+    "@types/yargs-unparser": "2.0.1",
     "@typescript-eslint/eslint-plugin": "4.28.2",
     "@typescript-eslint/parser": "4.28.2",
     "babel-jest": "27.0.6",

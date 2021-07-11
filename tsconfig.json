@@ -29,5 +29,5 @@
     "strict": true,
     "target": "ESNext"
   },
-  "include": ["jest.setup.js", "globals.d.ts", "src/**/*", "types/**/*.d.ts"]
+  "include": ["jest.setup.js", "globals.d.ts", "src/**/*"]
 }

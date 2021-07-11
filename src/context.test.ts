@@ -14,7 +14,7 @@ describe("Context", () => {
 
   it("should define env property", () => {
     expect.assertions(1);
-    expect(new Context().env).toStrictEqual("test");
+    expect(new Context().env).toBeObject();
   });
 
   it("should define pkg property", () => {
