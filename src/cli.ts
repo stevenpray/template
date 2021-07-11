@@ -1,8 +1,9 @@
 import cluster from "cluster";
-import minimist from "minimist";
+import { omit } from "lodash";
 import { constants } from "os";
 import ptimeout from "p-timeout";
 import { final } from "pino";
+import parser from "yargs-parser";
 import { Config } from "./config";
 import { Context } from "./context";
 import { DefaultCommand } from "./default/default.command";
@@ -10,98 +11,60 @@ import { Logger } from "./logger";
 
 import type Pino from "pino";
 import type { ReadonlyDeep } from "type-fest";
-import type { CommandClass, CommandInterface, CommandOptions } from "./command";
-import type { LoggerInterface, LogLevel } from "./logger";
-import type { Nullable } from "./types";
+import type { CommandClass, CommandInterface } from "./command";
+import type { ConfigParams } from "./config";
+import type { LoggerInterface } from "./logger";
 
-export interface CliDefaults {
-  exit: {
-    signals: NodeJS.Signals[];
-    timeout: number;
-  };
+export interface CliDefaults extends ConfigParams {
+  exit: { signals: NodeJS.Signals[]; timeout: number };
 }
 
-export type CliOptions = Partial<CliDefaults>;
-
-export type CliConfig = CliOptions & CliDefaults;
-
-export type CliCommandMap = ReadonlyMap<string, CommandClass>;
-
 export class Cli {
-  private static readonly defaults: Readonly<CliDefaults> = {
+  private static readonly defaults: ReadonlyDeep<CliDefaults> = {
     exit: {
       signals: ["SIGBREAK", "SIGHUP", "SIGINT", "SIGTERM", "SIGUSR2"],
       timeout: 10_000,
     },
   };
 
-  private readonly commands?: CliCommandMap;
-  private readonly config: ReadonlyDeep<CliConfig>;
   private readonly context: Context;
 
   private command?: CommandInterface;
   private exiting = false;
   private logger: LoggerInterface;
 
-  constructor(commands?: CliCommandMap, options?: CliOptions) {
-    this.commands = commands;
-    this.config = Config.defaults(options, Cli.defaults);
+  constructor(private readonly commands?: ReadonlyMap<string, CommandClass>) {
     this.context = new Context();
-    this.logger = Logger.create(this.context.env);
+    this.logger = new Logger(this.context).create();
   }
 
   async exec(argv: Readonly<string[]> = process.argv) {
     process.title = this.context.pkg.name;
     this.listen();
+    const { args, opts } = this.parse(argv);
+    const name = args.shift();
+    const Command = this.find(name);
+    const title = [name, cluster.isWorker && "worker"].filter(Boolean).join("/");
+    process.title = [process.title, title].join("/");
+    const config = await new Config(this.context, Command.schema).load(opts);
+    const level = config.log.level ?? (config.debug ? "debug" : "info");
+    this.logger = new Logger(this.context).create({ ...config.log, level, name: title });
+    this.logger.debug("executing %s in development environment (%o)", title, config);
 
-    const [, , ...args] = argv;
-    const { _, ...options } = minimist(args);
-    const name = _[0];
-    const { debug } = options as CommandOptions;
-
-    // Configure logging level if debug is enabled.
-    if (debug) {
-      const level = this.logger.levels.values[this.logger.level]!;
-      const levels = this.logger.levels;
-      if (level > levels.values["trace"]!) {
-        this.logger.level = levels.labels[level - 10] as LogLevel;
-      }
-    }
-
-    if (name == null) {
-      this.command = new DefaultCommand(this.context, this.logger, options);
-    } else {
-      const CommandCtor = this.commands?.get(name);
-      if (CommandCtor == null) {
-        throw new Error("command not found");
-      }
-
-      // Configure process title and logger name.
-      const title = [name, cluster.isWorker && "worker"].filter(Boolean).join("/");
-      process.title = [process.title, title].join("/");
-      this.logger = this.logger.child({ name: title });
-
-      this.command = new CommandCtor(this.context, this.logger, options as CommandOptions);
-    }
-
-    if (this.context.env === "development") {
-      this.logger.debug("executing in development environment (options: %o)", options);
-    } else if (debug) {
-      this.logger.warn("executing with debug enabled");
-    }
+    this.command = new Command(this.context, this.logger, config);
     await this.command.exec();
   }
 
-  private async exit(code = 0, signal: Nullable<NodeJS.Signals> = null) {
+  async exit(code = 0, signal?: NodeJS.Signals) {
     if (this.exiting) {
       return;
     }
     this.exiting = true;
     try {
       // Attempt to exit gracefully.
-      const exit = this.command?.exit?.(code, signal);
+      const exit = this.command?.exit?.(code, signal ?? null);
       if (exit instanceof Promise) {
-        await ptimeout(exit, this.config.exit.timeout, "graceful exit timed-out");
+        await ptimeout(exit, Cli.defaults.exit.timeout, "graceful exit timed-out");
       }
       process.nextTick(process.exit.bind(process, code));
     } catch (error) {
@@ -127,7 +90,7 @@ export class Cli {
       void this.exit();
     });
     // Graceful exit on POSIX signals.
-    for (const signal of this.config.exit.signals) {
+    for (const signal of Cli.defaults.exit.signals) {
       process.on(signal, () => {
         this.logger.trace("process received signal: %s", signal);
         const code = 128 + constants.signals[signal];
@@ -152,8 +115,24 @@ export class Cli {
     });
     // Trace process exit.
     process.once("exit", (code) => {
+      const info = { code, duration: process.uptime(), graceful: this.exiting };
       const logger = this.logger as Pino.Logger;
-      final(logger).trace("process exit (code: %d, graceful: %s)", code, this.exiting);
+      final(logger).trace("process exit %o", info);
     });
+  }
+
+  private parse(argv: Readonly<string[]>) {
+    const { _: args, ...options } = parser(argv.slice(2), {
+      configuration: { "strip-aliased": true, "strip-dashed": true },
+    });
+    return { args, opts: omit(options, "$0") };
+  }
+
+  private find(name?: string) {
+    const Command = name == null ? DefaultCommand : this.commands?.get(name);
+    if (Command == null) {
+      throw new Error("command not found");
+    }
+    return Command;
   }
 }

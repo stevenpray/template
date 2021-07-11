@@ -1,7 +1,8 @@
 import { mock } from "jest-mock-extended";
 import { Command } from "./command";
+import { Config } from "./config";
 
-import type { CommandOptions } from "./command";
+import type { CommandConfig } from "./command";
 import type { Context } from "./context";
 import type { LoggerInterface } from "./logger";
 
@@ -14,9 +15,9 @@ describe("Command", () => {
   describe("instance", () => {
     const context = mock<Context>();
     const logger = mock<LoggerInterface>();
-    const config: CommandOptions = { debug: true };
+    const config = Config.freeze({ debug: true } as CommandConfig);
 
-    it("should define exit method", () => {
+    it("should define exec method", () => {
       expect.assertions(1);
 
       class FooCommand extends Command {
@@ -25,7 +26,8 @@ describe("Command", () => {
         }
       }
 
-      expect(new FooCommand(context, logger, config).exec).toBeFunction();
+      const command = new FooCommand(context, logger, config);
+      expect(command.exec).toBeFunction();
     });
 
     it("should define protected config, context, and logger properties", async () => {
