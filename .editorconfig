@@ -16,5 +16,5 @@ end_of_line = crlf
 [{*.mdx?}]
 trim_trailing_whitespace = false
 
-[{*.mk,Makefile}]
+[{*.mk,makefile,Makefile}]
 indent_style = tab
