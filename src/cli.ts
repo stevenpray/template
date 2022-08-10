@@ -1,6 +1,6 @@
-import cluster from "cluster";
 import { omit } from "lodash";
-import { constants } from "os";
+import cluster from "node:cluster";
+import { constants } from "node:os";
 import ptimeout from "p-timeout";
 import { final } from "pino";
 import parser from "yargs-parser";
@@ -43,7 +43,7 @@ export class Cli {
     this.listen();
     const { args, opts } = this.parse(argv);
     const name = args.shift();
-    const Command = this.find(name);
+    const Command = this.find(name as string);
     const title = [name, cluster.isWorker && "worker"].filter(Boolean).join("/");
     process.title = [process.title, title].join("/");
     const config = await new Config(this.context, Command.schema).load(opts);
@@ -82,7 +82,6 @@ export class Cli {
     });
     // Raise uncaught exception on unhandled promise rejection.
     process.on("unhandledRejection", (reason) => {
-      // eslint-disable-next-line @typescript-eslint/no-throw-literal
       throw reason;
     });
     // Graceful exit on stdin EOF.
@@ -116,8 +115,7 @@ export class Cli {
     // Trace process exit.
     process.once("exit", (code) => {
       const info = { code, duration: process.uptime(), graceful: this.exiting };
-      const logger = this.logger as Pino.Logger;
-      final(logger).trace("process exit %o", info);
+      this.logger.debug(info, "process exit");
     });
   }
 

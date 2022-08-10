@@ -1,8 +1,9 @@
 "use strict";
 
-const dotenv = require("dotenv-defaults");
-const expand = require("dotenv-expand");
+require("reflect-metadata");
+const { config } = require("dotenv-defaults");
+const { expand } = require("dotenv-expand");
+const extended = require("jest-extended");
 
-expand(dotenv.config());
-
-require("jest-extended");
+expand(config());
+expect.extend(extended);

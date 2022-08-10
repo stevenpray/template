@@ -1,3 +1,9 @@
 {
-  "ignores": ["@babel/runtime-corejs3", "core-js", "pino-pretty"]
+  "ignores": [
+    "@babel/*",
+    "@types/*",
+    "babel-*",
+    "core-js",
+    "pino-pretty"
+  ]
 }

@@ -10,8 +10,9 @@ describe("Cli", () => {
     expect(new Cli()).toBeInstanceOf(Cli);
   });
 
-  it("should have run method", () => {
+  it("should have exec method", () => {
     expect.assertions(1);
+
     expect(new Cli().exec).toBeFunction();
   });
 
@@ -20,7 +21,7 @@ describe("Cli", () => {
 
     class TestCommand extends Command {
       exec() {
-        return undefined;
+        return;
       }
     }
 

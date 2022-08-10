@@ -1,17 +1,16 @@
 import root from "app-root-path";
-import cluster from "cluster";
 import execa from "execa";
 import { defaults } from "lodash";
+import cluster from "node:cluster";
 import unparse from "yargs-unparser";
 import { Logger } from "./logger";
 
-import type { ChildProcess } from "child_process";
-import type Execa from "execa";
+import type { Options as ExecaOptions } from "execa";
+import type { ChildProcess } from "node:child_process";
 import type { ReadonlyDeep } from "type-fest";
 import type { ConfigParams, ConfigSchema } from "./config";
 import type { Context } from "./context";
 import type { LoggerInterface, LogLevel } from "./logger";
-import type { MaybePromise } from "./types";
 
 export interface CommandForkOptions {
   env?: NodeJS.Dict<any> | null;
@@ -21,8 +20,7 @@ export interface CommandForkOptions {
   };
 }
 
-// eslint-disable-next-line import/no-named-as-default-member
-export interface CommandSpawnOptions extends Execa.Options {
+export interface CommandSpawnOptions extends ExecaOptions {
   args?: string[];
 }
 
@@ -32,8 +30,8 @@ export interface CommandConfig extends ConfigParams {
 }
 
 export interface CommandInterface {
-  exec: () => MaybePromise<void>;
-  exit?: (code: number, signal: NodeJS.Signals | null) => MaybePromise<void>;
+  exec: () => Promise<void> | void;
+  exit?: (code: number, signal: NodeJS.Signals | null) => Promise<void> | void;
 }
 
 export interface CommandClass<C = CommandConfig> {
@@ -68,7 +66,7 @@ export abstract class Command<C extends CommandConfig = CommandConfig> implement
     protected readonly config: ReadonlyDeep<C>,
   ) {}
 
-  abstract exec(): MaybePromise<void>;
+  abstract exec(): Promise<void> | void;
 
   protected fork(options?: CommandForkOptions) {
     const config = defaults(options, { env: null, retry: { attempts: 0, interval: 0 } });
@@ -89,7 +87,7 @@ export abstract class Command<C extends CommandConfig = CommandConfig> implement
   protected spawn(command: string, options?: CommandSpawnOptions) {
     const stdio = [process.stdin, process.stdout, process.stderr];
     const { args, ...config } = defaults(options, { stdio });
-    const child: ChildProcess = execa(command, args, config);
+    const child = execa(command, args, config) as ChildProcess;
     this.logger.debug("child spawned (pid: %d, %o)", child.pid, { command, args, options });
     child.on("error", (error) => this.logger.error(error));
     child.on("exit", (code, signal) => {

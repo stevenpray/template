@@ -22,11 +22,12 @@ describe("Command", () => {
 
       class FooCommand extends Command {
         exec() {
-          return undefined;
+          return;
         }
       }
 
       const command = new FooCommand(context, logger, config);
+
       expect(command.exec).toBeFunction();
     });
 
@@ -40,7 +41,7 @@ describe("Command", () => {
           expect(this.logger).toBeDefined();
         }
 
-        async exit() {
+        exit() {
           return Promise.resolve();
         }
       }

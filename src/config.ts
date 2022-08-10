@@ -1,9 +1,9 @@
 import convict from "convict";
 import validator from "convict-format-with-validator";
 import { cosmiconfig } from "cosmiconfig";
-import fs from "fs/promises";
 import { defaultsDeep, isObject } from "lodash";
-import path from "path";
+import fs from "node:fs/promises";
+import path from "node:path";
 
 import type Convict from "convict";
 import type { PartialDeep, ReadonlyDeep } from "type-fest";

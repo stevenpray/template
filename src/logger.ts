@@ -33,10 +33,12 @@ export class Logger implements FactoryInterface<LoggerInterface> {
     return pino(
       {
         level,
-        prettyPrint: options?.pretty && {
-          ignore: this.context.env.dev ? "hostname" : undefined,
-          translateTime: this.context.env.dev && "HH:MM:ss.l",
-          suppressFlushSyncWarning: this.context.env.dev,
+        transport: {
+          options: {
+            ignore: this.context.env.isDevelopment ? "hostname" : undefined,
+            translateTime: this.context.env.isDevelopment && "HH:MM:ss.l",
+          },
+          target: "pino-pretty",
         },
       },
       stream,

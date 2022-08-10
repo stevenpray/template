@@ -27,7 +27,7 @@ describe("Logger", () => {
     it("should define method create", () => {
       expect.assertions(6);
       const logger = new Logger(context);
-      for (const level of [...Logger.levels]) {
+      for (const level of Logger.levels) {
         expect(logger.create()).toHaveProperty(level);
       }
     });

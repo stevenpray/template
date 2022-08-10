@@ -25,11 +25,11 @@ describe("Config", () => {
 
       expect(config).toBeFrozen();
       expect(config.x).toBeFrozen();
-      expect(config.x.bar).toStrictEqual("baz");
+      expect(config.x.bar).toBe("baz");
       expect(config.x.bar).toBeFrozen();
-      expect(config.x.y.idk).toStrictEqual(false);
+      expect(config.x.y.idk).toBe(false);
       expect(config.x.y).toBeFrozen();
-      expect(config.z).toStrictEqual("z");
+      expect(config.z).toBe("z");
       expect(config.z).toBeFrozen();
     });
   });

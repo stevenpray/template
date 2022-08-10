@@ -2,11 +2,10 @@
   "root": true,
   "reportUnusedDisableDirectives": true,
   "env": {
-    "commonjs": true,
     "es6": true,
-    "jest": true,
     "node": true
   },
+  "parser": "@babel/eslint-parser",
   "parserOptions": {
     "ecmaVersion": 2019,
     "ecmaFeatures": { "impliedStrict": false },
@@ -16,36 +15,40 @@
     "@typescript-eslint",
     "babel",
     "compat",
+    "editorconfig",
     "eslint-comments",
+    "github",
     "html",
     "import",
     "jest",
     "jsdoc",
-    "json",
+    "jsonc",
     "jsx-a11y",
     "lodash",
     "markdown",
     "no-secrets",
+    "no-use-extend-native",
     "node",
     "prettier",
     "promise",
     "react",
     "react-hooks",
+    "security",
     "simple-import-sort",
     "sonarjs",
     "unicorn"
   ],
   "extends": [
     "eslint:recommended",
+    "plugin:editorconfig/all",
     "plugin:eslint-comments/recommended",
     "plugin:import/errors",
     "plugin:import/warnings",
-    "plugin:jest/recommended",
-    "plugin:jest/style",
     "plugin:jsdoc/recommended",
     "plugin:lodash/recommended",
     "plugin:node/recommended",
     "plugin:promise/recommended",
+    "plugin:security/recommended",
     "plugin:sonarjs/recommended",
     "plugin:unicorn/recommended",
     "plugin:prettier/recommended"
@@ -53,14 +56,12 @@
   "rules": {
     "array-callback-return": 2,
     "camelcase": 0, // @see babel/camelcase
-    "consistent-return": 2,
     "consistent-this": [1, "that"],
     "curly": [2, "all"],
     "default-case-last": 2,
     "default-param-last": 1,
     "dot-notation": 1,
     "eqeqeq": [2, "smart"],
-    "func-style": [1, "expression"],
     "getter-return": [2, { "allowImplicit": true }], // @override eslint:recommended allowImplicit
     "guard-for-in": 2,
     "jsx-quotes": 1,
@@ -72,12 +73,12 @@
     "no-alert": 2,
     "no-array-constructor": 2,
     "no-await-in-loop": 2,
-    "no-confusing-arrow": [2, { "allowParens": true }],
     "no-constructor-return": 2,
+    "no-console": 1,
     "no-continue": 2,
     "no-else-return": 2,
     "no-empty": [2, { "allowEmptyCatch": true }], // @override eslint:recommended
-    "no-eval": 2,
+    "no-eval": 0, // @see security/detect-eval-with-expression
     "no-extra-bind": 2,
     "no-extra-label": 2,
     "no-implicit-coercion": 2,
@@ -184,13 +185,15 @@
     "symbol-description": 2,
     "valid-typeof": 0, // @override eslint:recommended: @see babel/valid-typeof
     "vars-on-top": 1,
-
     "babel/camelcase": [1, { "properties": "always" }],
     "babel/new-cap": 1,
     "babel/no-invalid-this": 2,
     "babel/no-unused-expressions": 1,
     "babel/valid-typeof": [2, { "requireStringLiterals": true }],
-
+    "editorconfig/indent": 0, // @see prettier/prettier
+    // "eslint-comments/require-description": 2,
+    "github/no-implicit-buggy-globals": 2,
+    "github/no-then": 2,
     "import/extensions": [2, { "json": "always" }],
     "import/first": 1,
     "import/named": 1,
@@ -200,11 +203,10 @@
     "import/no-anonymous-default-export": 2,
     "import/no-cycle": 2,
     "import/no-deprecated": 1,
-    "import/no-dynamic-require": 2,
     "import/no-extraneous-dependencies": [2, { "devDependencies": true }],
     "import/no-internal-modules": 0,
     "import/no-mutable-exports": 2,
-    "import/no-namespace": 1,
+    "import/no-named-as-default": 0, // @override @override import/warnings
     "import/no-restricted-paths": 0,
     "import/no-self-import": 2,
     "import/no-unassigned-import": 0,
@@ -214,26 +216,24 @@
     "import/no-webpack-loader-syntax": 2,
     "import/order": 0, // @see simple-import-sort/imports
     "import/prefer-default-export": 0,
-    "import/unambiguous": 2,
 
     "jest/consistent-test-it": 1,
-    "jest/lowercase-name": [1, { "ignore": ["describe", "test"] }],
-    "jest/no-deprecated-functions": 1,
+    "jest/no-deprecated-functions": 1, // @override jest/recommended severity
     "jest/no-duplicate-hooks": 2,
     "jest/no-if": 2,
     "jest/no-test-return-statement": 2,
     "jest/prefer-called-with": 1,
     "jest/prefer-expect-assertions": 1,
     "jest/prefer-hooks-on-top": 1,
+    "jest/prefer-lowercase-title": [1, { "ignore": ["describe", "test"] }],
     "jest/prefer-spy-on": 1,
     "jest/prefer-strict-equal": 1,
     "jest/prefer-todo": 1,
 
-    "jsdoc/check-examples": 1,
+    "jsdoc/check-examples": 1, // @see https://github.com/eslint/eslint/issues/14745
     "jsdoc/check-indentation": 1,
     "jsdoc/check-syntax": 1,
     "jsdoc/match-description": 1,
-    "jsdoc/require-description": 0,
     "jsdoc/require-description-complete-sentence": 1,
     "jsdoc/require-hyphen-before-param-description": 1,
     "jsdoc/require-jsdoc": [
@@ -250,19 +250,19 @@
       }
     ],
     "jsdoc/require-param-description": 0, // @override jsdoc/recommended
-    "jsdoc/require-returns-description": 0, // @override jsdoc/recommended
-
-    "lodash/import-scope": 0, // TODO.
+    "jsdoc/require-param-type": 1,
+    "jsdoc/require-returns-description": 0, // @override jsdoc/recommended,
+    "jsdoc/sort-tags": 1,
+    "lodash/import-scope": [1, "member"],
     "lodash/prefer-lodash-method": 0, // @override lodash/recommended
-
-    "no-secrets/no-secrets": [2, { "tolerance": 4 }],
-
+    "no-secrets/no-secrets": [2, { "tolerance": 5 }],
     "node/callback-return": 2,
     "node/exports-style": [1, "module.exports"],
     "node/file-extension-in-import": 0, // @see import/extensions
     "node/handle-callback-err": 2,
     "node/no-callback-literal": 2,
-    "node/no-extraneous-import": 0, // @see import/no-extraneous-dependencies
+    "node/no-extraneous-import": 0, // @override node/recommended: @see import/no-extraneous-dependencies
+    "node/no-extraneous-require": 0, // @override node/recommended: @see import/no-extraneous-dependencies
     "node/no-missing-import": 0, // @override node/recommended: @see import/no-unresolved
     "node/no-missing-require": 0, // @override node/recommended: @see import/no-unresolved
     "node/no-mixed-requires": 2,
@@ -276,15 +276,16 @@
     "node/prefer-global/buffer": 1,
     "node/prefer-global/console": 1,
     "node/prefer-global/process": 1,
-    "node/prefer-global/text-decoder": 1,
-    "node/prefer-global/text-encoder": 1,
+    "node/prefer-global/text-decoder": [1, "never"],
+    "node/prefer-global/text-encoder": [1, "never"],
+    "node/prefer-global/url": [1, "never"],
     "node/prefer-promises/dns": 1,
     "node/prefer-promises/fs": 1,
-
     "promise/no-return-in-finally": 2, // @override promise/recommended severity
-
     "prettier/prettier": 1, // @override prettier/recommended severity
-
+    "security/detect-non-literal-fs-filename": 0, // @override security/recommended
+    "security/detect-object-injection": 0, // @override security/recommended
+    "security/detect-unsafe-regex": 0, // @override security/recommended
     "simple-import-sort/exports": 1,
     "simple-import-sort/imports": [
       1,
@@ -292,7 +293,9 @@
         "groups": [["^\u0000"], ["^[^/\\.]", "^\\."], ["^[^/\\.].*\u0000$", "^\\..*\u0000$"]]
       }
     ],
-
+    "sonarjs/cognitive-complexity": [1, 20], // @override sonarjs/recommended severity and value
+    "sonarjs/no-duplicate-string": 1, // @override sonarjs/recommended severity
+    "sonarjs/no-nested-switch": 0, // @override sonarjs/recommended
     "unicorn/better-regex": 1, // @override unicorn/recommended severity
     "unicorn/catch-error-name": 1, // @override unicorn/recommended severity
     "unicorn/consistent-function-scoping": 1, // @override unicorn/recommended severity
@@ -303,14 +306,15 @@
     "unicorn/explicit-length-check": 0, // @override unicorn/recommended
     "unicorn/filename-case": [1, { "cases": { "kebabCase": true, "pascalCase": true } }], // @override unicorn/recommended severity
     "unicorn/import-index": 1, // @override unicorn/recommended severity
-    "unicorn/no-array-reduce": 1, // @override unicorn/recommended severity
+    "unicorn/no-array-method-this-argument": 0, // @override unicorn/recommended
+    "unicorn/no-array-reduce": 0, // @override unicorn/recommended
+    "unicorn/no-array-callback-reference": 0, // @override unicorn/recommended
     "unicorn/no-for-loop": 1, // @override unicorn/recommended severity
     "unicorn/no-hex-escape": 1, // @override unicorn/recommended severity
     "unicorn/no-nested-ternary": 0, // @override unicorn/recommended; @conflict prettier/prettier
     "unicorn/no-null": 0, // @override unicorn/recommended
     "unicorn/no-unreadable-array-destructuring": 0, // @override unicorn/recommended
     "unicorn/no-unused-properties": 1,
-    "unicorn/no-useless-undefined": 0, // @override unicorn/recommended; @conflict consistent-return
     "unicorn/no-zero-fractions": 0, // @override unicorn/recommended
     "unicorn/number-literal-case": 0, // @override unicorn/recommended; @conflict prettier/prettier
     "unicorn/prefer-array-flat-map": 0, // @override unicorn/recommended
@@ -321,7 +325,6 @@
     "unicorn/prefer-modern-dom-apis": 1, // @override unicorn/recommended severity
     "unicorn/prefer-module": 0, // @override unicorn/recommended
     "unicorn/prefer-negative-index": 1, // @override unicorn/recommended severity
-    "unicorn/prefer-node-protocol": 0, // @override unicorn/recommended
     "unicorn/prefer-number-properties": 1, // @override unicorn/recommended severity
     "unicorn/prefer-object-has-own": 1,
     "unicorn/prefer-optional-catch-binding": 1, // @override unicorn/recommended severity
@@ -344,7 +347,7 @@
     {
       "files": ["src/**/*"],
       "parserOptions": {
-        "ecmaVersion": 2021,
+        "ecmaVersion": "latest",
         "ecmaFeatures": { "impliedStrict": true, "jsx": true },
         "sourceType": "module"
       },
@@ -352,11 +355,8 @@
         "import/extensions": [".js", ".json", ".jsx"]
       },
       "rules": {
-        "no-console": 1,
-
         "import/no-commonjs": 2,
         "import/no-default-export": 2,
-
         "node/global-require": 2,
         "node/no-process-env": 2,
         "node/no-sync": 2,
@@ -365,32 +365,30 @@
       }
     },
     {
-      "files": ["**/*.json", "**/*.json5"],
-      "extends": ["plugin:json/recommended"],
+      "files": ["**/*.{json,json5}"],
+      "parser": "jsonc-eslint-parser",
+      "extends": [
+        "plugin:jsonc/base",
+        "plugin:jsonc/recommended-with-json",
+        "plugin:jsonc/recommended-with-json5",
+        "plugin:jsonc/recommended-with-jsonc",
+        "plugin:jsonc/prettier"
+      ],
       "rules": {
         "import/unambiguous": 0,
-
-        "json/*": [2, { "allowComments": true }]
+        "jsonc/no-plus-sign": 1
       }
     },
     {
-      "files": ["**/*.html"],
-      "env": {
-        "browser": true,
-        "commonjs": false,
-        "es6": false,
-        "jest": false,
-        "node": false
-      },
-      "parserOptions": {
-        "ecmaFeatures": { "impliedStrict": false },
-        "ecmaVersion": 2015,
-        "sourceType": "script"
-      },
-      "extends": ["plugin:compat/recommended"]
+      "files": [".eslintrc.json"],
+      "rules": {
+        "no-inline-comments": 0,
+        "line-comment-position": 0,
+        "jsonc/no-comments": 0
+      }
     },
     {
-      "files": ["**/*.ts", "**/*.tsx"],
+      "files": ["**/*.{ts,tsx}"],
       "parser": "@typescript-eslint/parser",
       "parserOptions": {
         "createDefaultProgram": true,
@@ -412,20 +410,17 @@
         "no-use-before-define": 0, // @see @typescript-eslint/no-use-before-define
         "no-useless-constructor": 0, // @see @typescript-eslint/no-useless-constructor
         "require-await": 0, // @see @typescript-eslint/require-await
-
         "babel/camelcase": 0, // @see @typescript-eslint/naming-convention
         "babel/new-cap": 0, // @see @typescript-eslint/naming-convention
         "babel/no-invalid-this": 0, // @see @typescript-eslint/no-invalid-this
         "babel/no-unused-expressions": 0, // @see @typescript-eslint/no-unused-expressions
-
+        "jsdoc/no-types": 2,
         "jsdoc/require-jsdoc": 0, // @override jsdoc/recommended
-
+        "jsdoc/require-param-type": 0,
         "node/no-missing-import": 0, // @override node/recommended: @see import/no-unresolved
         "node/no-unsupported-features/es-builtins": 0, // @override node/recommended: @see @babel/preset-env
         "node/no-unsupported-features/es-syntax": 0, // @override node/recommended: @see @babel/preset-env
-
         "promise/valid-params": 0, // @override promise/recommended
-
         "@typescript-eslint/array-type": [1, { "default": "array-simple" }],
         "@typescript-eslint/ban-ts-comment": [2, { "ts-expect-error": "allow-with-description" }], // @override @typescript-eslint/recommended
         "@typescript-eslint/consistent-type-definitions": [1, "interface"],
@@ -440,22 +435,30 @@
         "@typescript-eslint/method-signature-style": 1,
         "@typescript-eslint/naming-convention": [
           1,
-          { "selector": "accessor", "format": ["camelCase"] },
+          { "selector": "default", "format": ["camelCase", "PascalCase"] },
+          { "selector": "variable", "format": ["camelCase", "PascalCase", "UPPER_CASE"] },
+          { "selector": "typeLike", "format": ["PascalCase"] },
           { "selector": "enumMember", "format": ["PascalCase"] },
-          { "selector": "function", "format": ["camelCase"] },
-          { "selector": "method", "format": ["camelCase"] },
           {
-            "selector": "parameter",
+            "selector": "classProperty",
             "format": ["camelCase", "PascalCase"],
             "leadingUnderscore": "allow"
           },
-          { "selector": "typeLike", "format": ["PascalCase"] }
+          {
+            "selector": "parameter",
+            "format": ["camelCase"],
+            "modifiers": ["unused"],
+            "leadingUnderscore": "allow"
+          },
+          { "selector": "objectLiteralProperty", "format": null },
+          { "selector": "typeProperty", "format": null }
         ],
         "@typescript-eslint/no-explicit-any": 0, // @override @typescript-eslint/recommended
         "@typescript-eslint/no-floating-promises": 1,
         "@typescript-eslint/no-implied-eval": 2,
-        "@typescript-eslint/no-invalid-this": 0,
+        "@typescript-eslint/no-invalid-this": 2,
         "@typescript-eslint/no-invalid-void-type": 1,
+        "@typescript-eslint/no-meaningless-void-operator": 1,
         "@typescript-eslint/no-non-null-assertion": 0, // @override @typescript-eslint/recommended
         "@typescript-eslint/no-require-imports": 2,
         "@typescript-eslint/no-shadow": 2,
@@ -463,8 +466,8 @@
         "@typescript-eslint/no-unnecessary-boolean-literal-compare": 1,
         "@typescript-eslint/no-unnecessary-condition": 2,
         "@typescript-eslint/no-unnecessary-type-arguments": 1,
-        "@typescript-eslint/no-use-before-define": 2,
         "@typescript-eslint/no-unused-expressions": 2,
+        "@typescript-eslint/no-use-before-define": 1,
         "@typescript-eslint/no-unused-vars": [1, { "argsIgnorePattern": "^_" }], // @override @typescript-eslint/recommended severity
         "@typescript-eslint/no-useless-constructor": 1,
         "@typescript-eslint/prefer-for-of": 1,
@@ -472,8 +475,7 @@
         "@typescript-eslint/prefer-nullish-coalescing": 2,
         "@typescript-eslint/prefer-optional-chain": 1,
         "@typescript-eslint/prefer-readonly": 2,
-        "@typescript-eslint/prefer-reduce-type-parameter": 1,
-        "@typescript-eslint/unbound-method": 0
+        "@typescript-eslint/prefer-reduce-type-parameter": 1
       },
       "settings": {
         "import/extensions": [".js", ".json", ".jsx", ".ts", ".tsx"],
@@ -488,9 +490,34 @@
       }
     },
     {
-      "files": ["**/*.test.ts"],
+      "files": ["jest.setup.js", "**/*.{spec,test}.{js,ts}"],
+      "env": { "jest": true },
+      "extends": ["plugin:jest/recommended", "plugin:jest/style"],
       "rules": {
-        "@typescript-eslint/dot-notation": 0
+        "jest/consistent-test-it": 1,
+        "jest/no-deprecated-functions": 1, // @override jest/recommended severity
+        "jest/no-duplicate-hooks": 2,
+        "jest/no-if": 2,
+        "jest/no-test-return-statement": 2,
+        "jest/prefer-called-with": 1,
+        "jest/prefer-expect-assertions": 1,
+        "jest/prefer-hooks-on-top": 1,
+        "jest/prefer-lowercase-title": [1, { "ignore": ["describe", "test"] }],
+        "jest/prefer-spy-on": 1,
+        "jest/prefer-strict-equal": 1,
+        "jest/prefer-todo": 1
+      },
+      "settings": {
+        "jest": {
+          "version": 27
+        }
+      }
+    },
+    {
+      "files": ["**/*.{spec,test}.ts"],
+      "rules": {
+        "@typescript-eslint/dot-notation": 0,
+        "@typescript-eslint/unbound-method": 0
       }
     },
     {
@@ -587,6 +614,12 @@
       }
     },
     {
+      "files": ["**/*.{gql,graphql}"],
+      "rules": {
+        "graphql/template-strings": [2, { "env": "literal" }]
+      }
+    },
+    {
       "files": ["**/*.md"],
       "processor": "markdown/markdown"
     },
@@ -595,11 +628,32 @@
       "rules": {
         "no-console": 0,
         "strict": 0,
-
         "import/no-unresolved": 0,
-
         "unicorn/filename-case": 0
       }
+    },
+    {
+      "files": ["index.js"],
+      "settings": {
+        "import/extensions": [".js", ".ts"],
+        "import/resolver": { "typescript": {} }
+      }
+    },
+    {
+      "files": ["**/*.html"],
+      "env": {
+        "browser": true,
+        "commonjs": false,
+        "es6": false,
+        "jest": false,
+        "node": false
+      },
+      "parserOptions": {
+        "ecmaFeatures": { "impliedStrict": false },
+        "ecmaVersion": 2015,
+        "sourceType": "script"
+      },
+      "extends": ["plugin:compat/recommended"]
     }
   ]
 }
