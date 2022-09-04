@@ -4,14 +4,12 @@ import cluster from "node:cluster";
 import { constants } from "node:os";
 import { basename } from "node:path";
 import ptimeout from "p-timeout";
-import { final } from "pino";
 import parser from "yargs-parser";
 import { Config } from "./config";
 import { Context } from "./context";
 import { DefaultCommand } from "./default/default.command";
 import { Logger } from "./logger";
 
-import type Pino from "pino";
 import type { ReadonlyDeep } from "type-fest";
 import type { CommandClass, CommandInterface } from "./command";
 import type { ConfigParams } from "./config";
@@ -74,17 +72,17 @@ export class Cli {
       return;
     }
     this.exited = true;
+    this.logger.trace({ code, signal }, "process will exit");
     try {
       // Attempt to exit gracefully.
       const exit = this.command?.exit?.(code, signal ?? null);
       if (exit instanceof Promise) {
-        await ptimeout(exit, Cli.defaults.exit.timeout, "graceful exit timed-out");
+        await ptimeout(exit, Cli.defaults.exit.timeout, "process exit timed-out");
       }
       process.nextTick(process.exit.bind(process, code));
     } catch (error) {
       // Graceful exit failed with error.
-      const logger = this.logger as Pino.Logger;
-      final(logger).error(error);
+      this.logger.error(error);
       process.nextTick(process.kill.bind(process, process.pid, "SIGKILL"));
     }
   }

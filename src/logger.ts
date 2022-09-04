@@ -28,11 +28,9 @@ export class Logger implements FactoryInterface<LoggerInterface> {
   constructor(private readonly context: Context) {}
 
   create(options?: LoggerOptions) {
-    const level = options?.level ?? "info";
-    const stream = destination({ sync: options?.pretty });
     return pino(
       {
-        level,
+        level: options?.level ?? "info",
         transport: {
           options: {
             ignore: this.context.env.isDevelopment ? "hostname" : undefined,
@@ -41,7 +39,7 @@ export class Logger implements FactoryInterface<LoggerInterface> {
           target: "pino-pretty",
         },
       },
-      stream,
+      destination({ sync: true }),
     ) as LoggerInterface;
   }
 }
