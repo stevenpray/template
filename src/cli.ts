@@ -31,7 +31,7 @@ export interface CliDefaults extends ConfigParams {
 export class Cli {
   private static readonly defaults: ReadonlyDeep<CliDefaults> = {
     exit: {
-      signals: ["SIGBREAK", "SIGHUP", "SIGINT", "SIGTERM", "SIGUSR2"],
+      signals: ["SIGBREAK", "SIGHUP", "SIGINT", "SIGQUIT", "SIGTERM", "SIGUSR2"],
       timeout: 10_000,
     },
   };
