@@ -1,6 +1,8 @@
-import { omit } from "lodash";
+import root from "app-root-path";
+import { isError, omit } from "lodash";
 import cluster from "node:cluster";
 import { constants } from "node:os";
+import { basename } from "node:path";
 import ptimeout from "p-timeout";
 import { final } from "pino";
 import parser from "yargs-parser";
@@ -14,6 +16,13 @@ import type { ReadonlyDeep } from "type-fest";
 import type { CommandClass, CommandInterface } from "./command";
 import type { ConfigParams } from "./config";
 import type { LoggerInterface } from "./logger";
+
+export enum CliProcessMessage {
+  // PM2 graceful start with `wait-ready`.
+  Ready = "ready",
+  // PM2 graceful stop with `shutdown_with_message`.
+  Shutdown = "shutdown",
+}
 
 export interface CliDefaults extends ConfigParams {
   exit: { signals: NodeJS.Signals[]; timeout: number };
@@ -30,7 +39,7 @@ export class Cli {
   private readonly context: Context;
 
   private command?: CommandInterface;
-  private exiting = false;
+  private exited = false;
   private logger: LoggerInterface;
 
   constructor(private readonly commands?: ReadonlyMap<string, CommandClass>) {
@@ -39,8 +48,13 @@ export class Cli {
   }
 
   async exec(argv: Readonly<string[]> = process.argv) {
-    process.title = this.context.pkg.name;
-    this.listen();
+    // Listen for process events.
+    this.configureProcessListeners();
+    // Configure process stdin.
+    this.configureProcessStdin();
+    // Set the process title from the package.json bin entry if it exists.
+    this.configureProcessTitle();
+
     const { args, opts } = this.parse(argv);
     const name = args.shift();
     const Command = this.find(name as string);
@@ -56,10 +70,10 @@ export class Cli {
   }
 
   async exit(code = 0, signal?: NodeJS.Signals) {
-    if (this.exiting) {
+    if (this.exited) {
       return;
     }
-    this.exiting = true;
+    this.exited = true;
     try {
       // Attempt to exit gracefully.
       const exit = this.command?.exit?.(code, signal ?? null);
@@ -75,48 +89,102 @@ export class Cli {
     }
   }
 
-  private listen() {
+  private configureProcessListeners() {
+    // Handle exit on Windows and PM2 `shutdown_with_message`.
+    process.on("message", (message) => {
+      this.logger.debug("process received message %o", message);
+      if (message === CliProcessMessage.Shutdown) {
+        void this.exit();
+      }
+    });
     // Handle warning and deprecation messages.
     process.on("warning", (warning) => {
-      this.logger.warn(warning);
+      if (!isError(warning) || !warning.message.toLowerCase().startsWith("invalid 'main' field")) {
+        this.logger.warn(warning);
+      }
     });
-    // Raise uncaught exception on unhandled promise rejection.
-    process.on("unhandledRejection", (reason) => {
+    // Throw uncaught exception on unhandled rejection.
+    process.once("unhandledRejection", (reason) => {
       throw reason;
     });
-    // Graceful exit on stdin EOF.
-    process.stdin.once("end", () => {
-      void this.exit();
+    // Log uncaught exceptions and unhandled rejections.
+    process.on("uncaughtExceptionMonitor", (error) => {
+      if (error instanceof AggregateError) {
+        const errors = error.errors.map((e) => (isError(e) ? e.message : (e as string)));
+        this.logger.fatal(error.message, errors);
+      } else {
+        this.logger.fatal(error);
+      }
     });
-    // Graceful exit on POSIX signals.
+    // Handle exit on exception.
+    process.once("uncaughtException", () => {
+      void this.exit(1);
+    });
+    // Handle exit on empty event loop.
+    process.once("beforeExit", (code) => {
+      void this.exit(code);
+    });
+    // Trace process exit.
+    process.once("exit", (code) => {
+      const info = { code, graceful: this.exited };
+      this.logger.debug(info, "process exit");
+    });
+    // Handle exit on POSIX signals.
     for (const signal of Cli.defaults.exit.signals) {
       process.on(signal, () => {
-        this.logger.trace("process received signal: %s", signal);
+        this.logger.debug("process received signal: %s", signal);
         const code = 128 + constants.signals[signal];
         void this.exit(code, signal);
       });
     }
-    // Graceful exit on Windows and PM2 "shutdown_with_message".
-    process.on("message", (message) => {
-      if (message === "shutdown") {
-        this.logger.trace("process received shutdown message");
-        void this.exit();
+  }
+
+  private configureProcessStdin(stdin = process.stdin) {
+    if (!stdin.isTTY) {
+      return;
+    }
+    // Disable built-in processing of control sequences.
+    stdin.setRawMode(true);
+    // Decode stdin data buffer to UTF-8 string.
+    stdin.setEncoding("utf8");
+    // Listen to input on TTY stdin for custom handling of control sequences.
+    stdin.on("data", (data: string) => {
+      switch (data) {
+        // Re-implement process interrupt on ⌃c.
+        case "\u0003":
+          return process.emit("SIGINT", "SIGINT");
+        // End stdin stream on ⌃d.
+        case "\u0004":
+          return stdin.emit("end");
       }
     });
-    // Graceful exit on empty event loop.
-    process.once("beforeExit", (code) => {
-      void this.exit(code);
+    // Allow the program to exit when stdin is the only active socket.
+    stdin.unref();
+    // Handle stdin EOF.
+    stdin.on("end", () => {
+      void this.exit();
     });
-    // Graceful exit on exception.
-    process.once("uncaughtException", (error) => {
-      this.logger.fatal(error);
-      void this.exit(1);
-    });
-    // Trace process exit.
-    process.once("exit", (code) => {
-      const info = { code, duration: process.uptime(), graceful: this.exiting };
-      this.logger.debug(info, "process exit");
-    });
+  }
+
+  private configureProcessTitle(argv = process.argv) {
+    const script = argv.at(1);
+    if (script && this.context.pkg.bin) {
+      const records = Object.entries(this.context.pkg.bin);
+      const record = records.find(([name, path]) => {
+        const filename = basename(script);
+        const resolved = require.resolve(root.resolve(path));
+        return script === resolved || filename === name;
+      });
+      if (record) {
+        // Replace node exec path and args with `bin` record from package.json.
+        let title = [record.at(0), ...argv.slice(2)].join(" ");
+        if (cluster.isWorker) {
+          title += "/worker";
+        }
+        // Set the process title using the `bin` record from package.json if it exists.
+        process.title = title;
+      }
+    }
   }
 
   private parse(argv: Readonly<string[]>) {
