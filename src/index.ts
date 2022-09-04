@@ -6,4 +6,4 @@ import type { CommandClass } from "./command";
 
 const commands = new Map<string, CommandClass>();
 
-export const cli = () => new Cli(commands).exec();
+export const cli = new Cli(commands);
