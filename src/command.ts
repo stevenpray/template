@@ -34,7 +34,7 @@ export interface CommandInterface {
   exit?: (code: number, signal: NodeJS.Signals | null) => Promise<void> | void;
 }
 
-export interface CommandClass<C = CommandConfig> {
+export interface CommandClass<C extends CommandConfig = CommandConfig> {
   schema: ConfigSchema<C>;
   new (context: Context, logger: LoggerInterface, config: ReadonlyDeep<C>): CommandInterface;
 }
