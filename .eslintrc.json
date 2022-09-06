@@ -230,7 +230,7 @@
     "jest/prefer-strict-equal": 1,
     "jest/prefer-todo": 1,
 
-    "jsdoc/check-examples": 1, // @see https://github.com/eslint/eslint/issues/14745
+    "jsdoc/check-examples": 0, // @see https://github.com/eslint/eslint/issues/14745
     "jsdoc/check-indentation": 1,
     "jsdoc/check-syntax": 1,
     "jsdoc/match-description": 1,

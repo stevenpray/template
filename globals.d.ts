@@ -21,7 +21,9 @@ declare namespace NodeJS {
   }
 }
 
-// https://github.com/microsoft/TypeScript/issues/44253
+/**
+ * @see https://github.com/microsoft/TypeScript/issues/44253
+ */
 declare interface ObjectConstructor {
   hasOwn: <ObjectType extends Record, Key extends PropertyKey>(
     object: ObjectType,
