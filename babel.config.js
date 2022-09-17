@@ -1,6 +1,5 @@
 "use strict";
 
-// eslint-disable-next-line jsdoc/check-examples -- Rule not supported with ESLint 8.
 /**
  * @type {import("@babel/core").ConfigFunction}
  */

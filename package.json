@@ -25,14 +25,11 @@
     "build:scripts": "babel --quiet --extensions='.js,.ts' --ignore='**/*.test.ts' --source-maps --out-dir=lib src",
     "build:types": "tsc --project tsconfig.build.json",
     "clean": "rimraf lib",
-    "lint": "npm run lint:docs && npm run lint:scripts && npm run lint:types",
-    "lint:docs": "markdownlint .",
-    "lint:scripts": "eslint .",
-    "lint:types": "tsc",
+    "lint": "markdownlint . && eslint . && tsc",
     "postpack": "npm run clean",
     "prepack": "npm run clean && npm run build",
     "start": "nodemon --no-warnings bin --debug",
-    "test": "jest"
+    "test": "npm run lint && jest"
   },
   "dependencies": {
     "@babel/runtime-corejs3": "7.19.1",
