@@ -45,13 +45,13 @@ export class Cli {
     this.logger = new Logger(this.context).create();
   }
 
-  async exec(argv: Readonly<string[]> = process.argv) {
+  async exec(argv = process.argv) {
     // Listen for process events.
     this.configureProcessListeners();
     // Configure process stdin.
     this.configureProcessStdin();
     // Set the process title from the package.json bin entry if it exists.
-    this.configureProcessTitle();
+    this.configureProcessTitle(argv);
 
     const { args, opts } = this.parse(argv);
     const name = args.shift();

@@ -1,6 +1,6 @@
 declare namespace NodeJS {
   interface Process {
-    argv: string[] & [string, string];
+    argv: [string, string, ...string[]];
   }
 
   interface ProcessEnv extends Dict<string> {
