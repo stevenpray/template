@@ -34,7 +34,7 @@
   "dependencies": {
     "@babel/runtime-corejs3": "7.19.1",
     "app-root-path": "3.1.0",
-    "convict": "6.2.3",
+    "convict": "6.2.4",
     "convict-format-with-validator": "6.2.0",
     "core-js": "3.25.1",
     "cosmiconfig": "7.0.1",
